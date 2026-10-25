@@ -1,0 +1,1894 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laporan RHK 2026</title>
+  <!-- Untuk versi GitHub (bisa di-install di HP). Di Apps Script baris-baris ini diabaikan. -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#0b3c5d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Laporan RHK">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@900&family=Pacifico&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --biru:#0b4f6c; --biru2:#0e7490; --biru-muda:#e6f4f1; --teks:#0f172a; --abu:#64748b;
+      --toska:#0f8a6c; --gradasi:linear-gradient(135deg,#0b3c5d 0%,#0e6e78 55%,#10916b 100%);
+      --gradasi-btn:linear-gradient(135deg,#0b4f6c,#0f8a6c);
+      --garis:#e2e8f0; --hijau:#059669; --hijau-bg:#dcfce7; --merah:#dc2626; --merah-bg:#fee2e2;
+      --kuning:#b45309; --kuning-bg:#fef3c7; --putih:#fff;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',Roboto,Arial,sans-serif;background:linear-gradient(160deg,#e3f2ef 0%,#e4eef8 100%) fixed;min-height:100vh;color:var(--teks);padding:12px;font-size:14px;line-height:1.45}
+    .wrap{max-width:560px;margin:0 auto}
+    .card{background:var(--putih);border-radius:14px;box-shadow:0 4px 14px rgba(15,23,42,.08);overflow:hidden;margin-bottom:12px}
+    .pad{padding:16px}
+    .hidden{display:none!important}
+    h2{font-size:15px;margin-bottom:10px;color:var(--biru)}
+    small,.muted{color:var(--abu)}
+
+    /* Header */
+    .header{background:var(--gradasi);color:#fff;padding:18px 16px;text-align:center;position:relative}
+    /* Logo VY baru: cincin emas berputar, hati berdetak, huruf V & Y melompat */
+    /* Logo VY: kotak biru tua, cincin toska berputar, V centang + Y */
+    .logo-vy{width:82px;height:82px;display:block;margin:0 auto 8px;overflow:visible;filter:drop-shadow(0 6px 14px rgba(0,0,0,.25))}
+    .logo-vy .lg-busur{transform-origin:80px 82px;animation:putar 4s linear infinite}
+    .logo-vy .lg-titik{transform-origin:80px 82px;animation:putar 12s linear infinite}
+    .logo-vy .lg-v,.logo-vy .lg-y{stroke-dasharray:120;stroke-dashoffset:120;animation:gores 1.1s ease-out forwards}
+    .logo-vy .lg-y{animation-delay:.45s}
+    @keyframes gores{to{stroke-dashoffset:0}}
+    .tagline{font-size:12px;font-weight:600;color:#a7f3d0;margin-top:6px;min-height:16px;transition:opacity .4s}
+    .tagline.pudar{opacity:0}
+    .kanan-atas{position:absolute;top:10px;right:10px;display:flex;gap:6px;z-index:2}
+    @keyframes putar{to{transform:rotate(360deg)}}
+    @keyframes detak{0%,100%{transform:scale(1)}12%{transform:scale(1.1)}24%{transform:scale(1)}36%{transform:scale(1.07)}50%{transform:scale(1)}}
+    @keyframes lompatHuruf{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-6px) rotate(-12deg)}50%{transform:translateY(0) scale(1.18)}75%{transform:translateY(2px) rotate(10deg)}}
+    @keyframes kilau{0%,100%{transform:scale(.2);opacity:0}50%{transform:scale(1);opacity:1}}
+    .kaki{text-align:center;font-size:12px;color:var(--abu);padding:6px 0 18px;letter-spacing:.3px}
+    .kaki b{color:var(--biru)}
+
+    /* Panggung login: petugas PKH laki-laki & perempuan bertemu, salaman, tos */
+    #panggung{position:relative;overflow:hidden;margin:0 -12px;padding:0 12px 4px}
+    #lajur{position:relative;height:205px}
+    .tokoh{position:absolute;bottom:0;left:0;width:100px;z-index:2;will-change:transform}
+    #tokohP{z-index:3}
+    .tokoh .arah{transition:transform .2s}
+    .tokoh .arah.kiri{transform:scaleX(-1)}
+    .tokoh .arah.kiri .tk-teks{transform:scaleX(-1);transform-origin:60px 106px}
+    .tokoh svg{width:100px;height:auto;display:block;overflow:visible}
+    .tokoh .tk{transform-origin:50% 100%;transition:transform .25s}
+    .tk-kakiL{transform-origin:52px 130px}.tk-kakiR{transform-origin:67px 130px}
+    .tk-lenganL{transform-origin:33px 84px}.tk-lenganR{transform-origin:88px 84px}
+    .tk-mata{transform-origin:60px 48px;animation:kedip 4s infinite}
+    @keyframes kedip{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+    .tokoh.jalan .tk-kakiL,.tokoh.jalan .tk-lenganR{animation:ayun .45s ease-in-out infinite alternate}
+    .tokoh.jalan .tk-kakiR,.tokoh.jalan .tk-lenganL{animation:ayun .45s ease-in-out infinite alternate-reverse}
+    .tokoh.jalan .tk-badan{animation:bobJalan .225s ease-in-out infinite alternate}
+    .tokoh.lambai .tk-lenganR{animation:lambai .4s ease-in-out infinite alternate}
+    .tokoh.dorong .tk{transform:rotate(9deg)}
+    .tokoh.jalan.dorong .tk-lenganL{animation:none;transform:rotate(-82deg)}
+    .tokoh.jalan.dorong .tk-lenganR{animation:none;transform:rotate(-96deg)}
+    .tokoh.diam .tk-badan{animation:napas 2.6s ease-in-out infinite}
+    @keyframes ayun{from{transform:rotate(-20deg)}to{transform:rotate(20deg)}}
+    @keyframes bobJalan{from{transform:translateY(0)}to{transform:translateY(-3px)}}
+    @keyframes lambai{from{transform:rotate(-155deg)}to{transform:rotate(-115deg)}}
+    @keyframes napas{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+    #gelembung{position:absolute;top:4px;left:0;max-width:240px;background:#fff;color:var(--teks);border-radius:14px;padding:8px 12px;font-size:13px;font-weight:600;line-height:1.35;box-shadow:0 4px 14px rgba(15,23,42,.15);opacity:0;transform:scale(.6);transform-origin:50% 100%;transition:opacity .25s,transform .25s;z-index:3;pointer-events:none}
+    #gelembung.tampil{opacity:1;transform:scale(1)}
+    #gelembung::after{content:'';position:absolute;bottom:-7px;left:var(--ekor,50%);border:7px solid transparent;border-top-color:#fff;border-bottom:0;transform:translateX(-50%)}
+    #btnLewati{position:absolute;top:4px;left:4px;z-index:4;background:rgba(11,79,108,.12);color:var(--biru);border:0;border-radius:20px;padding:5px 10px;font-size:12px;font-weight:600;cursor:pointer}
+    #kartuLogin{position:relative;will-change:transform}
+    .tokoh.salaman .tk-lenganR{animation:salaman .2s ease-in-out infinite alternate}
+    .tokoh.tos .tk-lenganR{animation:none;transform:rotate(-140deg);transition:transform .15s}
+    .tokoh.tos .tk{transform:rotate(-4deg)}
+    @keyframes salaman{from{transform:rotate(-60deg)}to{transform:rotate(-76deg)}}
+    #tosEfek{position:absolute;top:18px;left:50%;transform:translateX(-50%) scale(0);z-index:5;font-weight:900;font-size:20px;color:#0f8a6c;text-shadow:0 2px 0 #fff;pointer-events:none;white-space:nowrap}
+    #tosEfek.pop{animation:tosPop .9s cubic-bezier(.2,1.6,.4,1) forwards}
+    #tosEfek::before{content:'';position:absolute;left:50%;top:50%;width:90px;height:90px;margin:-45px 0 0 -45px;border-radius:50%;border:3px solid #facc15;opacity:0}
+    #tosEfek.pop::before{animation:tosCincin .7s ease-out forwards}
+    @keyframes tosPop{0%{transform:translateX(-50%) scale(0)}40%{transform:translateX(-50%) scale(1.25)}100%{transform:translateX(-50%) scale(1);opacity:1}}
+    @keyframes tosCincin{0%{transform:scale(.2);opacity:1}100%{transform:scale(1.6);opacity:0}}
+    #kartuLogin{transition:none}
+    @media (prefers-reduced-motion: reduce){.logo-vy *,.tokoh *{animation:none!important;stroke-dashoffset:0!important}}
+    .header h1{font-size:17px;letter-spacing:.5px}
+    .header .sapa{font-size:15px;margin-top:6px;font-weight:600}
+    .header .sub{font-size:12px;opacity:.8}
+    .btn-keluar{background:rgba(255,255,255,.15);color:#fff;border:0;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer}
+
+    /* Form */
+    label{display:block;font-weight:600;margin:0 0 5px;color:#334155;font-size:13px}
+    .fg{margin-bottom:13px}
+    input,select,textarea{width:100%;padding:10px 12px;border:1px solid #cbd5e1;border-radius:9px;font-size:14px;font-family:inherit;background:#fff;color:var(--teks)}
+    input:focus,select:focus,textarea:focus{outline:none;border-color:#0d9488;box-shadow:0 0 0 3px rgba(13,148,136,.18)}
+    textarea{resize:vertical;min-height:80px}
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:9px;padding:11px 14px;font-size:14px;font-weight:600;cursor:pointer;background:var(--gradasi-btn);color:#fff;text-decoration:none;box-shadow:0 3px 10px rgba(11,79,108,.22)}
+    .btn:disabled{background:#94a3b8;box-shadow:none;cursor:not-allowed}
+    .btn.full{width:100%}
+    .btn.hijau{background:linear-gradient(135deg,#0f8a6c,#22a37a)}
+    .btn.putih{background:#fff;color:var(--biru);border:1px solid #a7d8cf;box-shadow:none}
+    .btn.merah{background:#fff;color:var(--merah);border:1px solid #fecaca;box-shadow:none}
+    .btn.kecil{padding:6px 10px;font-size:12px;border-radius:7px}
+    .aksi{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+    .pilih-foto{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .pilih-foto .btn{padding:12px 8px;border:2px dashed #a7d8cf;background:#f0fdfa}
+    .info-foto{font-size:12px;color:var(--abu);margin-top:5px}
+    .file-input{border:2px dashed #cbd5e1;padding:16px;text-align:center;cursor:pointer;border-radius:9px;background:#f8fafc}
+    .file-input:hover{border-color:#0d9488;background:#f0fdfa}
+    .preview img{width:100%;border-radius:8px;margin-top:8px;border:1px solid var(--garis)}
+    .catatan{font-size:12px;color:var(--abu);margin-top:4px}
+
+    /* Peringatan */
+    .alert{padding:12px 14px;border-radius:10px;margin-bottom:12px;font-size:13px}
+    .alert b{display:block;margin-bottom:3px}
+    .alert ul{margin:6px 0 0 18px}
+    .alert.kuning{background:var(--kuning-bg);color:#78350f;border:1px solid #fcd34d}
+    .alert.merah{background:var(--merah-bg);color:#7f1d1d;border:1px solid #fca5a5}
+    .alert.hijau{background:var(--hijau-bg);color:#14532d;border:1px solid #86efac}
+
+    /* Rekap */
+    .bln-bar{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+    .bln-bar input{flex:1}
+    .ringkas{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+    .ringkas div{background:linear-gradient(160deg,#f0fdfa,#eff6ff);border:1px solid #d5ece7;border-radius:10px;padding:10px;text-align:center}
+    .ringkas b{display:block;font-size:20px;color:var(--biru)}
+    .ringkas span{font-size:11px;color:var(--abu)}
+    .rk{padding:10px 0;border-bottom:1px solid var(--garis)}
+    .rk:last-child{border-bottom:0}
+    .rk-top{display:flex;justify-content:space-between;gap:10px;font-size:13px}
+    .rk-top span{font-weight:600}
+    .bar{height:8px;background:#e2e8f0;border-radius:6px;overflow:hidden;margin:6px 0 4px}
+    .bar i{display:block;height:100%;border-radius:6px;background:var(--merah)}
+    .bar i.ok{background:linear-gradient(90deg,#0e7490,#10b981)}
+    .bar i.mid{background:#f59e0b}
+    .st{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;display:inline-block}
+    .st.kurang{background:var(--merah-bg);color:var(--merah)}
+    .st.ok{background:var(--hijau-bg);color:var(--hijau)}
+    .st.info{background:#f1f5f9;color:var(--abu)}
+
+    /* Daftar laporan */
+    .lap{border:1px solid var(--garis);border-radius:11px;padding:12px;margin-bottom:10px}
+    .lap-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:6px}
+    .lap-tgl{font-weight:700;font-size:13px}
+    .chip{background:#ccfbf1;color:var(--biru);font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;white-space:nowrap}
+    .lap p{font-size:13px;margin-bottom:4px;white-space:pre-wrap;word-break:break-word}
+    .lap .meta{font-size:12px;color:var(--abu)}
+    .lap .tombol{display:flex;gap:8px;margin-top:8px}
+    .kosong{text-align:center;color:var(--abu);padding:20px 10px}
+
+    /* Modal */
+    .modal{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:50;display:flex;align-items:flex-end;justify-content:center;padding:0}
+    .modal-box{background:#fff;width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:16px 16px 0 0;padding:16px}
+    @media(min-width:600px){.modal{align-items:center;padding:20px}.modal-box{border-radius:16px}}
+    .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .modal-head h3{font-size:16px;color:var(--biru)}
+    .x{background:#f1f5f9;border:0;border-radius:8px;width:32px;height:32px;font-size:18px;cursor:pointer}
+    .foto-view img{width:100%;border-radius:10px;margin-bottom:10px;border:1px solid var(--garis)}
+
+    /* Lebar tampilan: laptop memakai layar penuh, HP menyesuaikan */
+    body[data-mode="admin"] .wrap{max-width:1500px}
+    body[data-mode="pegawai"] .wrap{max-width:1100px}
+    .nip{font-size:12px;opacity:.85;margin-top:2px;letter-spacing:.5px}
+    .kecil{font-size:11px;color:var(--abu);margin-top:2px}
+
+    /* Tabel laporan member */
+    .tlap{width:100%;border-collapse:collapse;font-size:13px}
+    .tlap th{background:linear-gradient(160deg,#e6f4f1,#e4eef8);color:var(--biru);text-align:left;padding:9px 10px;font-size:12px;border-bottom:2px solid #cde7e1}
+    .tlap td{padding:10px;border-bottom:1px solid var(--garis);vertical-align:top}
+    .tlap td.ur{white-space:pre-wrap;word-break:break-word;min-width:200px}
+    .aksi-sel{display:flex;flex-wrap:wrap;gap:5px}
+    .aksi-sel .btn{padding:5px 8px;font-size:12px}
+    @media (max-width:720px){
+      .tlap thead{display:none}
+      .tlap,.tlap tbody,.tlap tr,.tlap td{display:block;width:100%}
+      .tlap tr{border:1px solid var(--garis);border-radius:11px;padding:8px 10px;margin-bottom:10px;background:#fff}
+      .tlap td{display:flex;gap:10px;border:0;padding:5px 0}
+      .tlap td::before{content:attr(data-label);flex:0 0 78px;font-weight:700;color:var(--abu);font-size:11px;padding-top:2px}
+      .tlap td.ur{min-width:0}
+    }
+
+    /* Admin: data laporan & rincian member */
+    .bar-atas{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:12px 16px 0}
+    .bar-atas input{flex:1;min-width:150px}
+    .bar-atas .waktu-muat{font-size:11px;color:var(--abu)}
+    .filter{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin-bottom:10px}
+    table.tdata{border-collapse:collapse;width:100%;font-size:12px}
+    .tdata th{background:#0b4f6c;color:#fff;padding:8px;text-align:left;position:sticky;top:0;z-index:2;white-space:nowrap}
+    .tdata td{padding:7px 8px;border-bottom:1px solid var(--garis);vertical-align:top}
+    .tdata td.wrap{min-width:220px;white-space:pre-wrap;word-break:break-word}
+    .tdata tr:nth-child(even) td{background:#f8fbfb}
+    .tdata-wrap{overflow:auto;max-height:70vh;border:1px solid var(--garis);border-radius:10px}
+    .sel-foto{display:flex;flex-direction:column;gap:4px;min-width:96px}
+    .sel-foto img{width:90px;height:68px;object-fit:cover;border-radius:6px;border:1px solid var(--garis);background:#f1f5f9}
+    .sel-foto a{color:var(--biru);font-weight:600;text-decoration:none;white-space:nowrap}
+    .lnk{border:0;background:#e6f4f1;color:var(--biru);border-radius:6px;padding:2px 6px;font-size:11px;font-weight:600;cursor:pointer}
+    .tbl tr.klik{cursor:pointer}
+    .tbl tr.klik:hover td{background:#f0fdfa}
+    .tbl tr.dipilih td{background:#ccfbf1!important}
+    .detail{margin-top:14px;border:2px solid #99f6e4;border-radius:14px;padding:14px;background:#fbfffe}
+    .detail-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px}
+    .detail-head h3{color:var(--biru);font-size:16px}
+    .detail-grid{display:grid;grid-template-columns:minmax(240px,1fr) 2.2fr;gap:16px}
+    .detail-grid > div{min-width:0}
+    html{background:#e4eef8}
+    @media (max-width:900px){.detail-grid{grid-template-columns:1fr}}
+    .peg-atas{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}
+
+    /* Kamera dalam aplikasi */
+    .kamera-box{padding:12px;background:#0f172a;color:#fff}
+    .kamera-box .modal-head h3{color:#fff}
+    .kamera-layar{position:relative;background:#000;border-radius:12px;overflow:hidden}
+    .kamera-layar video{width:100%;max-height:68vh;display:block;object-fit:contain;background:#000}
+    .kamera-info{position:absolute;left:8px;bottom:8px;right:8px;font-size:12px;background:rgba(0,0,0,.55);padding:5px 8px;border-radius:8px}
+    .kamera-tombol{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px}
+    .jepret{width:68px;height:68px;border-radius:50%;border:5px solid #fff;background:#ef4444;cursor:pointer;box-shadow:0 0 0 3px rgba(255,255,255,.25)}
+    .jepret:active{transform:scale(.92)}
+
+    /* Lihat foto layar penuh */
+    #layarPenuh{position:fixed;inset:0;background:#000;z-index:120;display:flex;align-items:center;justify-content:center;touch-action:pinch-zoom}
+    #layarPenuh img{max-width:100vw;max-height:100vh;width:auto;height:auto;object-fit:contain;display:block}
+    #layarPenuh .tutup{position:fixed;top:12px;right:12px;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.18);color:#fff;font-size:22px;cursor:pointer}
+    #layarPenuh .petunjuk{position:fixed;bottom:14px;left:0;right:0;text-align:center;color:rgba(255,255,255,.7);font-size:12px;pointer-events:none}
+    .preview img,.foto-view img{cursor:zoom-in}
+
+    /* Loader & toast */
+    #loader{position:fixed;inset:0;background:rgba(255,255,255,.8);z-index:90;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font-weight:600;color:var(--biru)}
+    .spinner{border:4px solid #e2e8f0;border-top:4px solid var(--biru);border-radius:50%;width:42px;height:42px;animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    #toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#0f172a;color:#fff;padding:10px 16px;border-radius:10px;font-size:13px;z-index:95;max-width:90%;text-align:center;opacity:0;pointer-events:none;transition:opacity .25s}
+    #toast.show{opacity:1}
+    #toast.gagal{background:var(--merah)}
+
+    /* Admin */
+    .tabs{display:flex;gap:6px;overflow-x:auto;padding:10px;background:#f8fafc;border-bottom:1px solid var(--garis)}
+    .tabs button{flex:1;border:0;background:transparent;padding:8px 10px;border-radius:8px;font-weight:600;color:var(--abu);cursor:pointer;white-space:nowrap;font-size:13px}
+    .tabs button.aktif{background:var(--gradasi-btn);color:#fff}
+    .tbl-wrap{overflow-x:auto;border:1px solid var(--garis);border-radius:10px}
+    table.tbl{border-collapse:collapse;width:100%;font-size:12px}
+    .tbl th,.tbl td{padding:7px 8px;border-bottom:1px solid var(--garis);text-align:center;white-space:nowrap}
+    .tbl th{background:#f1f5f9;color:#334155;position:sticky;top:0}
+    .tbl td:first-child,.tbl th:first-child{text-align:left;position:sticky;left:0;background:#fff;z-index:1}
+    .tbl th:first-child{background:#f1f5f9}
+    .c-ok{color:var(--hijau);font-weight:700}
+    .c-kurang{color:var(--merah);font-weight:700}
+    .peg{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--garis)}
+    .peg:last-child{border-bottom:0}
+    .peg .nm{font-weight:700}
+    .tok{font-family:Consolas,monospace;background:#f1f5f9;padding:2px 6px;border-radius:5px;font-size:12px;letter-spacing:1px}
+    .peg .btns{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+    .trow{display:grid;grid-template-columns:1fr 70px 36px;gap:8px;margin-bottom:8px}
+    .legend{font-size:11px;color:var(--abu);margin-top:8px}
+
+    /* Ulang tahun */
+    .ultah{background:linear-gradient(135deg,#fde68a,#f9a8d4 55%,#c4b5fd);color:#3b0764;border-radius:14px;padding:16px;text-align:center;margin-bottom:12px;position:relative;overflow:hidden;box-shadow:0 4px 14px rgba(15,23,42,.08)}
+    .ultah .ikon{font-size:40px;line-height:1;animation:goyang 1.2s ease-in-out infinite}
+    .ultah h3{font-size:18px;margin:6px 0 4px}
+    .ultah p{font-size:13px}
+    @keyframes goyang{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg) scale(1.1)}}
+    .konfeti{position:fixed;top:-30px;font-size:22px;z-index:80;pointer-events:none;animation:jatuh linear forwards}
+    @keyframes jatuh{to{transform:translateY(110vh) rotate(540deg);opacity:.6}}
+    .ultah-list{background:#fdf2f8;border:1px solid #fbcfe8;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:13px}
+    .ultah-list b.j{display:block;color:#9d174d;margin-bottom:6px}
+    .ultah-item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:5px 0;border-top:1px dashed #fbcfe8}
+    .ultah-item:first-of-type{border-top:0}
+
+    /* Pesta ulang tahun (layar penuh) */
+    #modalPesta{align-items:center;padding:10px}
+    .pesta{position:relative;width:100%;max-width:520px;max-height:96vh;overflow:auto;background:radial-gradient(circle at 50% 70%,#fff3d6 0,#fffaf0 55%,#fff 100%);border-radius:18px;padding:14px 12px 16px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+    .pesta-x{position:absolute;top:10px;right:10px;z-index:40}
+    .pesta-judul{font-family:'Pacifico',cursive;font-size:30px;line-height:1.25;color:#be123c;text-shadow:0 2px 0 #fde68a;padding-top:4px}
+    .pesta-nama{font-weight:800;font-size:13px;letter-spacing:2px;color:#334155;margin-top:2px}
+    .bunting{width:100%;height:46px;display:block;margin-top:2px}
+    .bunting .lampu{animation:kelip 1.2s ease-in-out infinite}
+    @keyframes kelip{0%,100%{opacity:.35}50%{opacity:1}}
+    .pentas{position:relative;height:250px;margin-top:2px;overflow:hidden}
+    .pentas .sinar{position:absolute;left:50%;bottom:30px;width:240px;height:240px;transform:translateX(-50%);background:radial-gradient(circle,rgba(253,224,71,.55) 0,rgba(253,224,71,0) 65%);animation:sinar 2.4s ease-in-out infinite}
+    @keyframes sinar{0%,100%{opacity:.6;transform:translateX(-50%) scale(.9)}50%{opacity:1;transform:translateX(-50%) scale(1.08)}}
+    .pentas .lantai{position:absolute;left:50%;bottom:14px;width:88%;height:62px;transform:translateX(-50%);border-radius:50%;background:repeating-conic-gradient(from 0deg,#fecdd3 0 15deg,#fef3c7 15deg 30deg);opacity:.75}
+    .kue{position:absolute;left:50%;bottom:34px;width:96px;transform:translateX(-50%);z-index:10}
+    .kue svg{width:100%;display:block;overflow:visible}
+    .api{transform-box:fill-box;transform-origin:50% 100%;animation:api .35s ease-in-out infinite alternate}
+    @keyframes api{from{transform:scale(.85,1) rotate(-4deg)}to{transform:scale(1.1,1.2) rotate(4deg)}}
+    .blob-wrap{position:absolute;left:0;top:0;width:48px;transform-origin:50% 100%;will-change:transform}
+    .blob{width:48px;display:block;overflow:visible;animation:lompatBlob .42s ease-in-out infinite alternate}
+    .blob-tanganL{transform-origin:10px 42px;animation:tanganBlob .35s ease-in-out infinite alternate}
+    .blob-tanganR{transform-origin:50px 42px;animation:tanganBlob .35s ease-in-out infinite alternate-reverse}
+    @keyframes lompatBlob{from{transform:translateY(0)}to{transform:translateY(-11px)}}
+    @keyframes tanganBlob{from{transform:rotate(-28deg)}to{transform:rotate(18deg)}}
+    .pesta-besar{position:absolute;top:4px;left:0;right:0;z-index:30;opacity:0;transform:scale(.3);transition:opacity .5s,transform .7s cubic-bezier(.2,1.6,.4,1);pointer-events:none}
+    .pesta-besar.muncul{opacity:1;transform:scale(1)}
+    .pesta-besar .hb{font-family:'Pacifico',cursive;font-size:40px;line-height:1.15;background:linear-gradient(90deg,#f97316,#ec4899,#8b5cf6,#f97316);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:pelangi 3s linear infinite;filter:drop-shadow(0 2px 0 rgba(255,255,255,.9))}
+    .pesta-besar .nm{font-family:'Pacifico',cursive;font-size:26px;color:#be185d;line-height:1.2;text-shadow:0 2px 0 #fff}
+    .pesta-besar .ke{font-size:13px;font-weight:700;color:#7c2d12;margin-top:2px}
+    @keyframes pelangi{to{background-position:200% center}}
+    .pesta-doa{font-size:13px;color:#475569;margin:8px 6px 12px}
+
+    /* Area cetak */
+    #areaCetak{display:none}
+    @media print{
+      @page{size:A4;margin:14mm 12mm}
+      body{background:#fff;padding:0}
+      body>*:not(#areaCetak){display:none!important}
+      #areaCetak{display:block;font-size:11pt;color:#000;position:relative}
+      *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    }
+    .wm{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+    .wm-in{position:absolute;top:-50%;left:-50%;width:200%;height:200%;transform:rotate(-30deg);display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:50px 70px}
+    .wm-in span{font-size:18pt;font-weight:700;color:rgba(11,79,108,.07);white-space:nowrap}
+    .ct{position:relative;z-index:1}
+    .ct-head{display:flex;align-items:center;gap:12px;border-bottom:3px double #0b4f6c;padding-bottom:8px;margin-bottom:12px}
+    .ct-head svg{width:56px;height:50px}
+    .ct-head h1{font-size:16pt;color:#0b4f6c}
+    .ct-head p{font-size:10pt}
+    .ct table{border-collapse:collapse;width:100%;margin-bottom:10px}
+    .ct .info td{padding:2px 4px;vertical-align:top}
+    .ct .grid th,.ct .grid td{border:1px solid #475569;padding:5px 6px;font-size:10pt}
+    .ct .grid th{background:#ccfbf1}
+    .ct h3{font-size:12pt;color:#0b4f6c;margin:14px 0 6px}
+    .ct-item{border:1px solid #94a3b8;border-radius:6px;padding:8px;margin-bottom:10px;page-break-inside:avoid;break-inside:avoid}
+    .ct-item .no{font-weight:700;color:#0b4f6c;margin-bottom:4px}
+    .ct-item td{padding:2px 4px;vertical-align:top;font-size:10pt}
+    .ct-item td:first-child{width:110px;font-weight:600}
+    .ct-foto{display:flex;gap:8px;margin-top:6px}
+    .ct-foto img{flex:1;max-width:50%;max-height:8.5cm;object-fit:contain;border:1px solid #cbd5e1}
+    .ct-ttd{margin-top:24px;display:flex;justify-content:flex-end;page-break-inside:avoid}
+    .ct-ttd div{text-align:center;width:220px}
+    .ct-ttd .spasi{height:60px}
+  </style>
+</head>
+<body>
+<div class="wrap" id="app">
+
+  <!-- ================= LOGIN ================= -->
+  <div id="vLogin">
+    <div class="card" style="margin-bottom:0">
+      <div class="header">
+        <div class="kanan-atas"><button class="btn-keluar btn-install hidden" type="button" onclick="pasangAplikasi()">📲 Install</button></div>
+        <div class="logo-slot"></div>
+        <h1>LAPORAN RHK 2026</h1>
+        <div class="sub">Silakan Log-in dengan token Anda</div>
+        <div class="tagline" id="tagline">Input Sekarang, Beres Tepat Waktu</div>
+      </div>
+    </div>
+    <div id="panggung">
+      <div id="lajur">
+        <button id="btnLewati" class="hidden" type="button" onclick="lewatiAnimasi()">Lewati ⏭</button>
+        <div id="gelembung"></div>
+        <div id="tosEfek">🙌 Salam PKH!</div>
+        <div id="tokohL" class="tokoh diam"><div class="arah"></div></div>
+        <div id="tokohP" class="tokoh diam"><div class="arah kiri"></div></div>
+      </div>
+      <div id="kartuLogin" class="card">
+        <div class="pad">
+          <div id="loginAlert" class="alert merah hidden"></div>
+          <form id="formLogin">
+            <div class="fg">
+              <label for="inToken">TOKEN</label>
+              <input id="inToken" autocomplete="off" autocapitalize="characters" placeholder="Masukkan token dari admin" style="text-transform:uppercase;letter-spacing:2px;font-family:Consolas,monospace">
+            </div>
+            <div class="fg" style="display:flex;align-items:center;gap:8px">
+              <input type="checkbox" id="inIngat" style="width:auto" checked>
+              <label for="inIngat" style="margin:0;font-weight:400">Ingat saya di perangkat ini</label>
+            </div>
+            <button class="btn full" id="btnLogin">LOG-IN</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= PEGAWAI ================= -->
+  <div id="vPegawai" class="hidden">
+    <div id="pUltah"></div>
+    <div class="card">
+      <div class="header">
+        <div class="kanan-atas"><button class="btn-keluar btn-install hidden" type="button" onclick="pasangAplikasi()">📲 Install</button><button class="btn-keluar" type="button" onclick="logout()">Log-out</button></div>
+        <div class="logo-slot"></div>
+        <h1>LAPORAN RHK 2026</h1>
+        <div class="sapa" id="pSapa"></div>
+        <div class="nip" id="pNip"></div>
+      </div>
+      <div class="pad">
+        <div class="bln-bar">
+          <label for="pBulan" style="margin:0;white-space:nowrap">Bulan</label>
+          <input type="month" id="pBulan">
+        </div>
+        <div id="pPeringatan"></div>
+        <div class="ringkas" id="pRingkas"></div>
+        <div class="aksi">
+          <button class="btn" onclick="bukaForm()">＋ Tambah Laporan</button>
+          <button class="btn hijau" onclick="cetak()">🖨️ Cetak Semua</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card pad">
+      <h2>Rekap per RHK — <span id="pBulanTeks"></span></h2>
+      <div id="pRekap"></div>
+    </div>
+
+    <div class="card pad">
+      <h2>Laporan yang sudah diinput</h2>
+      <div id="pDaftar"></div>
+    </div>
+  </div>
+
+  <!-- ================= ADMIN ================= -->
+  <div id="vAdmin" class="hidden">
+    <div class="card">
+      <div class="header">
+        <div class="kanan-atas"><button class="btn-keluar btn-install hidden" type="button" onclick="pasangAplikasi()">📲 Install</button><button class="btn-keluar" type="button" onclick="logout()">Log-out</button></div>
+        <h1>ADMIN · LAPORAN RHK 2026</h1>
+        <div class="sapa" id="aSapa"></div>
+      </div>
+      <div class="tabs">
+        <button data-tab="rekap" class="aktif">📊 Rekap</button>
+        <button data-tab="data">📋 Data Laporan</button>
+        <button data-tab="member">👥 Member</button>
+        <button data-tab="target">🎯 Target RHK</button>
+        <button data-tab="atur">⚙️ Pengaturan</button>
+      </div>
+      <div class="bar-atas" id="aBarBulan">
+        <label for="aBulan" style="margin:0">Bulan</label>
+        <input type="month" id="aBulan">
+        <button class="btn putih kecil" onclick="muatAdmin()">🔄 Muat ulang</button>
+        <span class="waktu-muat" id="aWaktuMuat"></span>
+      </div>
+
+      <div class="pad" id="tab-rekap">
+        <div id="aUltah"></div>
+        <div class="ringkas" id="aRingkas"></div>
+        <div class="catatan" style="margin:0 0 6px">👆 Klik nama member untuk melihat rincian rekap dan laporannya.</div>
+        <div class="tbl-wrap"><table class="tbl" id="aTabel"></table></div>
+        <div class="legend" id="aLegend"></div>
+        <div id="aDetail"></div>
+      </div>
+
+      <div class="pad hidden" id="tab-data">
+        <div class="filter">
+          <select id="dMember"></select>
+          <select id="dRhk"></select>
+          <input id="dCari" placeholder="🔎 Cari uraian / tempat / nama…">
+        </div>
+        <div class="catatan" id="dJumlah" style="margin:0 0 6px"></div>
+        <div class="tdata-wrap"><table class="tdata" id="dTabel"></table></div>
+        <div class="catatan" style="margin-top:6px">🔗 <b>Buka</b> membuka foto di Google Drive · 📋 <b>Salin</b> menyalin link foto, bisa ditempel di WhatsApp atau browser lain.</div>
+      </div>
+
+      <div class="pad hidden" id="tab-member">
+        <div class="peg-atas">
+          <h2 style="margin:0">Daftar Member (<span id="pegJml">0</span>)</h2>
+          <button class="btn kecil" onclick="bukaFormMember()">➕ Tambah Member</button>
+        </div>
+        <div id="pegDaftar"></div>
+      </div>
+
+      <div class="pad hidden" id="tab-target">
+        <h2>Target per Bulan (berlaku untuk semua member)</h2>
+        <div class="trow" style="font-weight:700;font-size:12px;color:#334155"><span>Nama RHK</span><span>Target</span><span></span></div>
+        <div id="tgtDaftar"></div>
+        <div class="aksi" style="margin-top:6px">
+          <button class="btn putih" onclick="tambahBarisTarget()">＋ Tambah RHK</button>
+          <button class="btn" onclick="simpanTarget()">Simpan Target</button>
+        </div>
+        <div class="catatan" style="margin-top:8px">Target 0 = tanpa target (tidak memunculkan peringatan). Mengganti nama RHK tidak mengubah laporan lama yang sudah memakai nama sebelumnya.</div>
+      </div>
+
+      <div class="pad hidden" id="tab-atur">
+        <h2>Ganti Token Admin</h2>
+        <div class="fg"><input id="admTokenBaru" placeholder="Token admin baru (min. 8 karakter)" style="text-transform:uppercase;font-family:Consolas,monospace"></div>
+        <button class="btn full" onclick="gantiTokenAdmin()">Simpan Token Admin</button>
+        <h2 style="margin-top:20px">Link Foto</h2>
+        <div class="catatan" style="margin-bottom:8px">Foto baru otomatis bisa dibuka lewat link. Klik tombol ini sekali untuk mengaktifkan link pada foto-foto yang diunggah sebelum fitur ini ada.</div>
+        <button class="btn putih full" onclick="bagikanFotoLama()">🔗 Aktifkan link foto lama</button>
+        <h2 style="margin-top:20px">Data</h2>
+        <div class="aksi">
+          <a class="btn putih" id="lnkSheet" target="_blank" href="#">📑 Spreadsheet</a>
+          <a class="btn putih" id="lnkFolder" target="_blank" href="#">📁 Folder Foto</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="kaki">© 2026 <b>Varhamxiank.com</b></div>
+</div>
+
+<!-- ================= MODAL FORM LAPORAN ================= -->
+<div class="modal hidden" id="modalForm">
+  <div class="modal-box">
+    <div class="modal-head"><h3 id="modalFormJudul">Tambah Laporan</h3><button class="x" onclick="batalForm()">×</button></div>
+    <div id="formAlert" class="alert merah hidden"></div>
+    <form id="formLap">
+      <div class="fg"><label>RHK *</label><select id="fRhk" required></select></div>
+      <div class="fg"><label>URAIAN KEGIATAN *</label><textarea id="fUraian" required maxlength="2000" placeholder="Jelaskan kegiatan yang dilakukan"></textarea></div>
+      <div class="row2">
+        <div class="fg"><label>TANGGAL *</label><input type="date" id="fTanggal" required></div>
+        <div class="fg"><label>WAKTU *</label><input type="time" id="fWaktu" required></div>
+      </div>
+      <div class="fg"><label>TEMPAT KEGIATAN *</label><input id="fTempat" required maxlength="200" placeholder="Lokasi kegiatan"></div>
+      <div class="fg">
+        <label id="labelFoto1">DOKUMENTASI FOTO 1 *</label>
+        <div class="pilih-foto">
+          <button type="button" class="btn putih" onclick="pilihFoto('1','kamera')">📷 Kamera</button>
+          <button type="button" class="btn putih" onclick="pilihFoto('1','galeri')">🖼️ Galeri</button>
+        </div>
+        <input type="file" id="fKamera1" accept="image/*" capture="environment" class="hidden">
+        <input type="file" id="fGaleri1" accept="image/*" class="hidden">
+        <div class="info-foto" id="fFoto1Teks"></div>
+        <div class="preview" id="fPrev1"></div>
+      </div>
+      <div class="fg">
+        <label>DOKUMENTASI FOTO 2 (opsional)</label>
+        <div class="pilih-foto">
+          <button type="button" class="btn putih" onclick="pilihFoto('2','kamera')">📷 Kamera</button>
+          <button type="button" class="btn putih" onclick="pilihFoto('2','galeri')">🖼️ Galeri</button>
+        </div>
+        <input type="file" id="fKamera2" accept="image/*" capture="environment" class="hidden">
+        <input type="file" id="fGaleri2" accept="image/*" class="hidden">
+        <div class="info-foto" id="fFoto2Teks"></div>
+        <div class="preview" id="fPrev2"></div>
+      </div>
+      <div class="catatan" style="margin-bottom:12px">📷 <b>Kamera</b>: langsung memotret, foto diberi cap logo Kemensos, nama, lokasi, titik koordinat, hari-tanggal &amp; jam. 🖼️ <b>Galeri</b>: foto dikirim apa adanya tanpa cap. Foto langsung diunggah begitu dipilih supaya tombol kirim lebih cepat.</div>
+      <button class="btn full" id="btnKirim" type="submit">KIRIM LAPORAN</button>
+    </form>
+  </div>
+</div>
+
+<!-- ================= MODAL MEMBER ================= -->
+<div class="modal hidden" id="modalMember">
+  <div class="modal-box">
+    <div class="modal-head"><h3 id="pegFormJudul">Tambah Member</h3><button class="x" onclick="tutup('modalMember')">×</button></div>
+    <form id="formPeg">
+      <input type="hidden" id="pegId">
+      <div class="fg"><label>NAMA LENGKAP *</label><input id="pegNama" placeholder="Nama yang akan disapa saat login"></div>
+      <div class="fg"><label>NIP</label><input id="pegNip" inputmode="numeric" placeholder="Contoh: 198103172005012006"></div>
+      <div class="fg">
+        <label>TANGGAL LAHIR *</label>
+        <input type="date" id="pegLahir" min="1940-01-01">
+        <div class="catatan">Dipakai untuk ucapan selamat ulang tahun otomatis.</div>
+      </div>
+      <div class="fg">
+        <label>TOKEN</label>
+        <input id="pegToken" placeholder="Kosongkan = dibuat otomatis" style="text-transform:uppercase;font-family:Consolas,monospace;letter-spacing:1px">
+        <div class="catatan">Huruf/angka 4–20 karakter. Token inilah yang dipakai member untuk Log-in.</div>
+      </div>
+      <div class="fg" style="display:flex;align-items:center;gap:8px">
+        <input type="checkbox" id="pegAktif" style="width:auto" checked>
+        <label for="pegAktif" style="margin:0;font-weight:400">Aktif (boleh Log-in)</label>
+      </div>
+      <div class="aksi">
+        <button class="btn" type="submit">Simpan</button>
+        <button class="btn putih" type="button" onclick="tutup('modalMember')">Batal</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ================= MODAL KAMERA ================= -->
+<div class="modal hidden" id="modalKamera">
+  <div class="modal-box kamera-box">
+    <div class="modal-head"><h3>📷 Kamera</h3><button class="x" onclick="tutupKamera()">×</button></div>
+    <div class="kamera-layar">
+      <video id="kVideo" autoplay playsinline muted></video>
+      <div class="kamera-info" id="kInfo">📍 Mencari lokasi GPS…</div>
+    </div>
+    <div class="kamera-tombol">
+      <button class="btn putih" type="button" onclick="gantiKamera()">🔄 Balik</button>
+      <button class="jepret" type="button" onclick="jepret()" aria-label="Ambil foto"></button>
+      <button class="btn putih" type="button" onclick="tutupKamera()">Batal</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL FOTO ================= -->
+<div class="modal hidden" id="modalFoto">
+  <div class="modal-box">
+    <div class="modal-head"><h3>Dokumentasi</h3><button class="x" onclick="tutup('modalFoto')">×</button></div>
+    <div class="foto-view" id="fotoView"></div>
+  </div>
+</div>
+
+<!-- ================= PESTA ULANG TAHUN ================= -->
+<div class="modal hidden" id="modalPesta">
+  <div class="pesta">
+    <button class="x pesta-x" onclick="tutupPesta()">×</button>
+    <div class="pesta-judul">🎈 Happy Birthday 🎂</div>
+    <div class="pesta-nama" id="pestaNama"></div>
+    <svg class="bunting" id="bunting" viewBox="0 0 360 46" preserveAspectRatio="none"></svg>
+    <div class="pentas" id="pentas">
+      <div class="sinar"></div>
+      <div class="lantai"></div>
+      <div class="kue"><svg viewBox="0 0 100 100">
+        <ellipse cx="50" cy="94" rx="46" ry="6" fill="#e2e8f0"/>
+        <rect x="12" y="62" width="76" height="30" rx="6" fill="#f9a8d4"/>
+        <path d="M12,68 Q20,76 26,68 Q33,78 40,68 Q47,78 54,68 Q61,78 68,68 Q75,78 82,68 Q86,74 88,68 L88,64 Q88,60 84,60 L16,60 Q12,60 12,64 Z" fill="#fff1f2"/>
+        <rect x="24" y="40" width="52" height="24" rx="5" fill="#fde68a"/>
+        <path d="M24,45 Q30,52 35,45 Q41,53 47,45 Q53,53 59,45 Q65,53 70,45 Q74,50 76,45 L76,43 Q76,39 72,39 L28,39 Q24,39 24,43 Z" fill="#fff"/>
+        <circle cx="20" cy="82" r="1.8" fill="#38bdf8"/><circle cx="34" cy="86" r="1.8" fill="#22c55e"/><circle cx="50" cy="81" r="1.8" fill="#f97316"/><circle cx="66" cy="86" r="1.8" fill="#a855f7"/><circle cx="80" cy="81" r="1.8" fill="#38bdf8"/>
+        <g><rect x="35" y="24" width="5" height="16" rx="2" fill="#60a5fa"/><path class="api" d="M37.5,13 Q42,19 37.5,24 Q33,19 37.5,13Z" fill="#f59e0b"/></g>
+        <g><rect x="47.5" y="22" width="5" height="18" rx="2" fill="#f472b6"/><path class="api" d="M50,10 Q54.5,16 50,22 Q45.5,16 50,10Z" fill="#f59e0b" style="animation-delay:-.15s"/></g>
+        <g><rect x="60" y="24" width="5" height="16" rx="2" fill="#34d399"/><path class="api" d="M62.5,13 Q67,19 62.5,24 Q58,19 62.5,13Z" fill="#f59e0b" style="animation-delay:-.25s"/></g>
+      </svg></div>
+      <div class="pesta-besar" id="pestaBesar">
+        <div class="hb">Happy Birthday</div>
+        <div class="nm" id="pestaNama2"></div>
+        <div class="ke" id="pestaKe"></div>
+      </div>
+    </div>
+    <p class="pesta-doa">Semoga sehat selalu, panjang umur, dimudahkan segala urusan, dan makin sukses dalam tugas. 🤲<br><b>— Keluarga besar Varham 🙏</b></p>
+    <button class="btn full" onclick="tutupPesta()">Terima kasih 🥰</button>
+  </div>
+</div>
+
+<div id="layarPenuh" class="hidden" onclick="tutupLayarPenuh()">
+  <img id="layarPenuhImg" alt="Foto">
+  <button class="tutup" type="button" aria-label="Tutup">×</button>
+  <div class="petunjuk">Cubit untuk memperbesar · ketuk untuk menutup</div>
+</div>
+
+<div id="loader" class="hidden"><div class="spinner"></div><div id="loaderTeks">Memuat…</div></div>
+<div id="toast"></div>
+<div id="areaCetak"></div>
+
+<script>
+  const APP = 'Laporan RHK 2026';
+  const MULAI_PERINGATAN = 8;   // peringatan target muncul mulai tanggal 8 (minggu ke-2)
+  const BLN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  const HARI = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+  function buatLogo(u){
+    return '<svg class="logo-vy" viewBox="0 0 160 160" role="img" aria-label="Logo VY">'+
+      '<rect x="1" y="1" width="158" height="158" rx="38" fill="#0F2A4A" stroke="rgba(255,255,255,.18)" stroke-width="2"/>'+
+      '<circle cx="80" cy="82" r="54" fill="none" stroke="#1E4470" stroke-width="7"/>'+
+      '<g class="lg-busur"><circle cx="80" cy="82" r="54" fill="none" stroke="#14B8A6" stroke-width="7" stroke-linecap="round" stroke-dasharray="270 70" transform="rotate(-60 80 82)"/></g>'+
+      '<g class="lg-titik"><circle cx="80" cy="28" r="6" fill="#F5A524"/></g>'+
+      '<path class="lg-v" d="M44 84 L66 112 L90 60" fill="none" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>'+
+      '<path class="lg-y" d="M90 60 L104 84 M118 60 L104 84 L104 114" fill="none" stroke="#14B8A6" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>'+
+    '</svg>';
+  }
+  document.querySelectorAll('.logo-slot').forEach((el, i) => el.innerHTML = buatLogo('h'+i));
+  const LOGO = buatLogo('cetak');
+  const S = { token:'', role:'', nama:'', bulan:'', dash:null, adm:null, abulan:'', foto:{}, up:{}, slot:{}, pilih:null, editId:null, targetDiubah:false };
+  const $ = id => document.getElementById(id);
+
+  // ---------- util ----------
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function bulanSekarang(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); }
+  function hariIniStr(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+  function fmtBulan(b){ const [y,m]=String(b).split('-'); return (BLN[+m-1]||'')+' '+y; }
+  function fmtTgl(t){ if(!t) return '-'; const [y,m,d]=t.split('-').map(Number); const dt=new Date(y,m-1,d); return HARI[dt.getDay()]+', '+d+' '+BLN[m-1]+' '+y; }
+  function sapaan(){ const h=new Date().getHours(); return h<10?'Selamat pagi':h<15?'Selamat siang':h<18?'Selamat sore':'Selamat malam'; }
+  function labelRhk(r){ const m=/^RHK\s*\d+/i.exec(r); return m?m[0].toUpperCase():r.slice(0,10); }
+  function pesanErr(e){ return String((e&&e.message)||e).replace(/^(Error|Exception):\s*/,''); }
+
+  function simpanToken(t, ingat){
+    try{ localStorage.removeItem('rhk_token'); sessionStorage.removeItem('rhk_token'); }catch(e){}
+    try{ (ingat?localStorage:sessionStorage).setItem('rhk_token', t); }catch(e){}
+  }
+  function tokenDiingat(){
+    try{ return localStorage.getItem('rhk_token') !== null; }catch(e){ return false; }
+  }
+  function ambilToken(){
+    try{ return localStorage.getItem('rhk_token') || sessionStorage.getItem('rhk_token') || ''; }catch(e){ return ''; }
+  }
+
+  function loader(on, teks){ $('loader').classList.toggle('hidden',!on); if(teks) $('loaderTeks').textContent=teks; }
+  let toastT;
+  function toast(msg, gagal){ const t=$('toast'); t.textContent=msg; t.className='show'+(gagal?' gagal':''); clearTimeout(toastT); toastT=setTimeout(()=>t.className='',3500); }
+  function buka(id){ $(id).classList.remove('hidden'); }
+  function tutup(id){ $(id).classList.add('hidden'); }
+
+  // Di Apps Script memakai google.script.run; di GitHub memanggil link /exec lewat internet.
+  // >>> GANTI dengan link Web App Anda (yang berakhiran /exec) <<<
+  const API_URL = 'https://script.google.com/macros/s/AKfycbybp5979cPv83rjaWjMrIWec-IIS6VL3JzwCBAQiVYUvwfjDdZsUaE0r87iiAgBjXOU/exec';
+  const MODE_GITHUB = !(window.google && google.script && google.script.run);
+
+  function api(fn, ...args){
+    const gagal = err => {
+      if (pesanErr(err).indexOf('SESI_HABIS') > -1) logout('Sesi berakhir. Silakan Log-in lagi.');
+      throw err;
+    };
+    if (!MODE_GITHUB){
+      return new Promise((res, rej) => {
+        google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](...args);
+      }).catch(gagal);
+    }
+    if (!/^https:\/\/script\.google\.com\/.+\/exec$/.test(API_URL))
+      return Promise.reject(new Error('Link server belum diisi. Admin: isi API_URL di index.html dengan link /exec.'));
+    return fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },   // tanpa preflight CORS
+      body: JSON.stringify({ fn: fn, args: args }),
+      redirect: 'follow'
+    })
+      .catch(() => { throw new Error('Tidak bisa terhubung ke server. Periksa koneksi internet Anda.'); })
+      .then(r => { if (!r.ok) throw new Error('Server sedang bermasalah ('+r.status+'). Coba lagi sebentar.'); return r.json(); })
+      .then(j => { if (!j || !j.ok) throw new Error((j && j.error) || 'Terjadi kesalahan di server.'); return j.hasil; })
+      .catch(gagal);
+  }
+
+  // ---------- install aplikasi (versi GitHub) ----------
+  let promptInstall = null;
+  const SUDAH_TERPASANG = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  const IOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const ALAMAT_AMAN = location.protocol === 'https:' || location.hostname === 'localhost';
+  function aturTombolInstall(){
+    const tampil = MODE_GITHUB && !SUDAH_TERPASANG && (promptInstall || IOS || /Android|Mobile/i.test(navigator.userAgent) || ALAMAT_AMAN);
+    document.querySelectorAll('.btn-install').forEach(b => b.classList.toggle('hidden', !tampil));
+  }
+  window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); promptInstall = e; aturTombolInstall(); });
+  window.addEventListener('appinstalled', () => { promptInstall = null; document.querySelectorAll('.btn-install').forEach(b => b.classList.add('hidden')); toast('✅ Aplikasi berhasil di-install'); });
+  async function pasangAplikasi(){
+    if (promptInstall){
+      promptInstall.prompt();
+      try{ await promptInstall.userChoice; }catch(e){}
+      promptInstall = null; return;
+    }
+    if (IOS) alert('Cara install di iPhone/iPad:\n1. Ketuk tombol Bagikan (kotak dengan panah ke atas) di Safari\n2. Pilih "Tambah ke Layar Utama"\n3. Ketuk "Tambah"');
+    else alert('Cara install:\n1. Ketuk menu ⋮ di pojok kanan atas browser\n2. Pilih "Instal aplikasi" atau "Tambahkan ke layar utama"\n3. Ketuk "Instal"');
+  }
+  if (MODE_GITHUB && 'serviceWorker' in navigator && ALAMAT_AMAN){
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+  }
+
+  // ---------- tagline bergantian di halaman Log-in ----------
+  const TAGLINE = ['Input Sekarang, Beres Tepat Waktu','Lapor Cepat, Kerja Tuntas','Jangan Tunda, Input Saja!','Sekali Input, Langsung Beres','Laporan Lancar, Kinerja Bersinar','Hari Ini Input, Hari Ini Tuntas'];
+  let iTagline = 0;
+  setInterval(() => {
+    const el = $('tagline'); if (!el) return;
+    el.classList.add('pudar');
+    setTimeout(() => { iTagline = (iTagline + 1) % TAGLINE.length; el.textContent = TAGLINE[iTagline]; el.classList.remove('pudar'); }, 400);
+  }, 6000);
+
+  // ---------- login ----------
+  $('formLogin').addEventListener('submit', async e => {
+    e.preventDefault();
+    const t = $('inToken').value.trim().toUpperCase();
+    if (!t) return;
+    await masuk(t, $('inIngat').checked);
+  });
+
+  async function masuk(t, ingat){
+    $('loginAlert').classList.add('hidden');
+    loader(true, 'Memeriksa token…');
+    try{
+      const r = await api('login', t);
+      if (!r.ok){ loader(false); $('loginAlert').textContent=r.pesan; $('loginAlert').classList.remove('hidden'); simpanToken('',false); return; }
+      S.token = t; S.role = r.role; S.nama = r.nama;
+      simpanToken(t, ingat);
+      tutup('vLogin');
+      document.body.dataset.mode = r.role;
+      if (r.role === 'admin'){ buka('vAdmin'); $('aSapa').textContent = sapaan()+', Admin 👋'; S.abulan = bulanSekarang(); $('aBulan').value=S.abulan; $('pegLahir').max = hariIniStr(); await muatAdmin(); mulaiAutoAdmin(); }
+      else { buka('vPegawai'); S.bulan = bulanSekarang(); $('pBulan').value=S.bulan; await muatDashboard(); }
+    }catch(err){
+      $('loginAlert').textContent = pesanErr(err); $('loginAlert').classList.remove('hidden');
+    }finally{ loader(false); }
+  }
+
+  function logout(pesan){
+    simpanToken('', false);
+    Object.assign(S, { token:'', role:'', nama:'', dash:null, adm:null, foto:{}, pilih:null, editId:null });
+    document.body.dataset.mode = 'login';
+    clearInterval(timerAdmin); tutupKamera();
+    ['vPegawai','vAdmin','modalForm','modalFoto','modalMember'].forEach(tutup);
+    buka('vLogin'); tampilAkhirLogin(); tutupPesta(); $('inToken').value='';
+    if (pesan){ $('loginAlert').textContent=pesan; $('loginAlert').classList.remove('hidden'); }
+    loader(false);
+  }
+
+  // ---------- dashboard pegawai ----------
+  $('pBulan').addEventListener('change', () => { if($('pBulan').value){ S.bulan=$('pBulan').value; muatDashboard(); } });
+
+  async function muatDashboard(){
+    loader(true, 'Memuat laporan…');
+    try{ S.dash = await api('getDashboard', S.token, S.bulan); renderPegawai(); }
+    catch(e){ toast(pesanErr(e), true); }
+    finally{ loader(false); }
+  }
+
+  function renderPegawai(){
+    const d = S.dash;
+    $('pSapa').textContent = d.ultah ? '🎉 Selamat ulang tahun, '+d.nama+'!' : sapaan()+', '+d.nama+' 👋';
+    $('pUltah').innerHTML = d.ultah
+      ? '<div class="ultah"><div class="ikon">🎂</div><h3>Happy Birthday, '+esc(d.nama)+'!</h3>'+
+        '<p>Selamat ulang tahun ke-'+d.ultah.umur+' 🎉 Semoga sehat selalu dan makin sukses.</p>'+
+        '<button class="btn putih kecil" style="margin-top:8px" onclick="putarPesta()">🎉 Putar lagi perayaannya</button></div>'
+      : '';
+    if (d.ultah) {
+      // perayaan layar penuh otomatis, sekali per hari per perangkat
+      const kunci = 'rhk_pesta_'+d.hariIni+'_'+d.nama;
+      let sudah = false;
+      try{ sudah = !!localStorage.getItem(kunci); localStorage.setItem(kunci,'1'); }catch(e){}
+      if (!sudah) setTimeout(putarPesta, 400);
+    }
+    $('pBulanTeks').textContent = fmtBulan(d.bulan);
+    $('pNip').textContent = d.nip ? 'NIP. ' + d.nip : '';
+
+    const bertarget = d.rekap.filter(r => r.target > 0);
+    const kurang = bertarget.filter(r => r.jumlah < r.target);
+    const tercapai = bertarget.length - kurang.length;
+
+    // Peringatan
+    let html = '';
+    if (bertarget.length){
+      const listKurang = '<ul>'+kurang.map(r=>'<li>'+esc(r.rhk)+' — kurang <b style="display:inline">'+(r.target-r.jumlah)+'</b></li>').join('')+'</ul>';
+      if (d.bulan === d.bulanIni){
+        const [y,m] = d.bulan.split('-').map(Number);
+        const tglKe = Number(d.hariIni.slice(8));
+        const sisa = new Date(y, m, 0).getDate() - tglKe + 1;
+        if (kurang.length && tglKe < MULAI_PERINGATAN){
+          html = '';   // minggu pertama: belum perlu diingatkan
+        } else if (kurang.length){
+          html = '<div class="alert '+(sisa<=7?'merah':'kuning')+'"><b>⚠️ '+kurang.length+' RHK belum mencapai target</b>Sisa waktu '+sisa+' hari lagi di bulan ini.'+listKurang+'</div>';
+        } else html = '<div class="alert hijau"><b>✅ Semua target bulan ini sudah tercapai!</b>Terima kasih, tetap semangat.</div>';
+      } else if (d.bulan < d.bulanIni){
+        html = kurang.length
+          ? '<div class="alert merah"><b>Bulan ini ditutup dengan '+kurang.length+' RHK belum tercapai</b>'+listKurang+'</div>'
+          : '<div class="alert hijau"><b>✅ Semua target bulan ini tercapai.</b></div>';
+      }
+    }
+    $('pPeringatan').innerHTML = html;
+
+    $('pRingkas').innerHTML =
+      '<div><b>'+d.laporan.length+'</b><span>Total laporan</span></div>'+
+      '<div><b>'+tercapai+'/'+bertarget.length+'</b><span>RHK tercapai</span></div>'+
+      '<div><b style="color:'+(kurang.length?'var(--merah)':'var(--hijau)')+'">'+kurang.length+'</b><span>RHK kurang</span></div>';
+
+    // Rekap per RHK
+    $('pRekap').innerHTML = htmlRekap(d.rekap);
+
+    // Daftar laporan (tabel)
+    const tombol = (ikon, teks, fn, id, kls) => '<button class="btn '+(kls||'putih')+' kecil" onclick="'+fn+'(\''+id+'\')">'+ikon+' '+teks+'</button>';
+    $('pDaftar').innerHTML = d.laporan.length
+      ? '<table class="tlap"><thead><tr><th>RHK</th><th>Hari, Tanggal &amp; Waktu</th><th>Uraian</th><th>Lokasi</th><th>Tanggal Input</th><th>Aksi</th></tr></thead><tbody>'+
+        d.laporan.map(l =>
+          '<tr>'+
+            '<td data-label="RHK"><div><span class="chip">'+esc(labelRhk(l.rhk))+'</span><div class="kecil">'+esc(l.rhk.replace(/^RHK\s*\d+\s*/i,''))+'</div></div></td>'+
+            '<td data-label="Waktu"><div>'+esc(fmtTgl(l.tanggal))+'<div class="kecil">Pukul '+esc(l.waktu)+'</div></div></td>'+
+            '<td data-label="Uraian" class="ur">'+esc(l.uraian)+'</td>'+
+            '<td data-label="Lokasi"><div>'+esc(l.tempat)+(l.koordinat ? '<div class="kecil">🛰️ '+esc(l.koordinat)+'</div>' : '')+'</div></td>'+
+            '<td data-label="Diinput"><div>'+esc(fmtInput(l.ts))+'</div></td>'+
+            '<td data-label="Aksi"><div class="aksi-sel">'+
+              tombol('👁','Foto','lihatFoto',l.id)+tombol('✏️','Edit','editLap',l.id)+tombol('🖨️','Cetak','cetakSatu',l.id)+tombol('🗑','Hapus','hapusLap',l.id,'merah')+
+            '</div></td>'+
+          '</tr>').join('')+
+        '</tbody></table>'
+      : '<div class="kosong">Belum ada laporan di '+esc(fmtBulan(d.bulan))+'.</div>';
+  }
+
+  /** Daftar rekap per RHK dengan bar kemajuan (dipakai member & admin). */
+  function htmlRekap(rekap){
+    return rekap.map(r => {
+      let st, kelas;
+      if (r.target <= 0){ st='<span class="st info">Tanpa target</span>'; kelas='ok'; }
+      else if (r.jumlah < r.target){ st='<span class="st kurang">Kurang '+(r.target-r.jumlah)+'</span>'; kelas = r.jumlah/r.target >= .5 ? 'mid' : ''; }
+      else if (r.jumlah > r.target){ st='<span class="st ok">Tercapai (+'+(r.jumlah-r.target)+')</span>'; kelas='ok'; }
+      else { st='<span class="st ok">Tercapai</span>'; kelas='ok'; }
+      const pct = r.target>0 ? Math.min(100, Math.round(r.jumlah/r.target*100)) : (r.jumlah?100:0);
+      return '<div class="rk"><div class="rk-top"><span>'+esc(r.rhk)+'</span><b>'+r.jumlah+' / '+r.target+'</b></div>'+
+             '<div class="bar"><i class="'+kelas+'" style="width:'+pct+'%"></i></div>'+st+'</div>';
+    }).join('') || '<div class="kosong">Belum ada RHK.</div>';
+  }
+
+  /** Hujan konfeti. */
+  function konfeti(){
+    const ikon = ['🎉','🎊','🎈','🎂','✨','🥳'];
+    for (let i = 0; i < 40; i++){
+      const s = document.createElement('span');
+      s.className = 'konfeti'; s.textContent = ikon[i % ikon.length];
+      s.style.left = Math.random()*100+'vw';
+      s.style.animationDuration = (2.5 + Math.random()*2.5)+'s';
+      s.style.animationDelay = (Math.random()*1.5)+'s';
+      document.body.appendChild(s);
+      setTimeout(() => s.remove(), 7000);
+    }
+  }
+  // ---------- pesta ulang tahun ----------
+  const WARNA_BLOB = [['#f97316','#fde047'],['#ef4444','#60a5fa'],['#a855f7','#facc15'],['#22c55e','#f472b6'],['#3b82f6','#fb923c'],['#ec4899','#34d399'],['#eab308','#a78bfa']];
+  function blobSvg(w, topi){
+    return '<svg viewBox="0 0 60 78" class="blob">'+
+      '<g class="blob-tanganL"><path d="M10,42 Q2,36 4,27" stroke="'+w+'" stroke-width="5" stroke-linecap="round" fill="none"/></g>'+
+      '<g class="blob-tanganR"><path d="M50,42 Q58,36 56,27" stroke="'+w+'" stroke-width="5" stroke-linecap="round" fill="none"/></g>'+
+      '<path d="M30,16 C46,16 52,30 52,46 C52,62 44,70 30,70 C16,70 8,62 8,46 C8,30 14,16 30,16Z" fill="'+w+'"/>'+
+      '<path d="M21,19 L30,1 L39,19 Z" fill="'+topi+'"/><path d="M25,12 L35,12" stroke="#fff" stroke-width="2"/><circle cx="30" cy="2" r="3.2" fill="#fff"/>'+
+      '<ellipse cx="22" cy="40" rx="5" ry="6" fill="#fff"/><ellipse cx="38" cy="40" rx="5" ry="6" fill="#fff"/>'+
+      '<circle cx="23" cy="41.5" r="2.7" fill="#1e293b"/><circle cx="37" cy="41.5" r="2.7" fill="#1e293b"/>'+
+      '<path d="M23,52 Q30,60 37,52" stroke="#1e293b" stroke-width="2.3" fill="none" stroke-linecap="round"/>'+
+      '<circle cx="15.5" cy="50" r="3.2" fill="#fff" opacity=".35"/><circle cx="44.5" cy="50" r="3.2" fill="#fff" opacity=".35"/>'+
+      '<ellipse cx="22" cy="72" rx="6" ry="3.5" fill="#1e293b" opacity=".85"/><ellipse cx="38" cy="72" rx="6" ry="3.5" fill="#1e293b" opacity=".85"/>'+
+    '</svg>';
+  }
+  function buatBunting(){
+    const y = x => { const t = x/360; return (1-t)*(1-t)*5 + 2*(1-t)*t*28 + t*t*5; };
+    const warna = ['#ef4444','#f59e0b','#22c55e','#3b82f6','#a855f7','#ec4899'];
+    let s = '<path d="M0,5 Q180,51 360,5" stroke="#a16207" stroke-width="1.6" fill="none"/>';
+    for (let i = 0; i < 18; i++){
+      const x = 10 + i*20, yy = y(x);
+      s += '<path d="M'+(x-8)+','+yy+' L'+(x+8)+','+yy+' L'+x+','+(yy+15)+' Z" fill="'+warna[i%6]+'"/>';
+      if (i < 17){ const xl = x+10; s += '<circle class="lampu" cx="'+xl+'" cy="'+(y(xl)+1)+'" r="2.4" fill="#fde047" style="animation-delay:'+(-(i%4)*0.3)+'s"/>'; }
+    }
+    $('bunting').innerHTML = s;
+  }
+  let pestaRAF = 0, pestaTimer = 0;
+  function putarPesta(){
+    const d = S.dash; if (!d || !d.ultah) return;
+    mulaiPesta(d.nama, d.ultah.umur);
+  }
+  function mulaiPesta(nama, umur){
+    buatBunting();
+    $('pestaNama').textContent = nama.toUpperCase();
+    $('pestaNama2').textContent = nama;
+    $('pestaKe').textContent = 'Selamat ulang tahun ke-'+umur+' 🎉';
+    $('pestaBesar').classList.remove('muncul');
+    buka('modalPesta');
+    const pentas = $('pentas');
+    pentas.querySelectorAll('.blob-wrap').forEach(b => b.remove());
+    const blobs = WARNA_BLOB.map((w, i) => {
+      const el = document.createElement('div');
+      el.className = 'blob-wrap'; el.innerHTML = blobSvg(w[0], w[1]);
+      el.firstChild.style.animationDelay = (-i*0.13)+'s';
+      pentas.appendChild(el); return el;
+    });
+    const n = blobs.length, t0 = performance.now();
+    cancelAnimationFrame(pestaRAF); clearTimeout(pestaTimer);
+    const langkah = t => {
+      const W = pentas.clientWidth, H = pentas.clientHeight;
+      const cx = W/2, cy = H - 40, rx = Math.min(W*0.38, 175), ry = 30;
+      const masuk = Math.min(1, (t - t0)/1200);           // menari masuk dari tengah
+      const a0 = (t - t0)/1000 * 0.85;
+      blobs.forEach((b, i) => {
+        const a = a0 + i*2*Math.PI/n, s = Math.sin(a);
+        const x = cx + rx*masuk*Math.cos(a), y = cy + ry*masuk*s;
+        const sc = (0.72 + 0.28*(s+1)/2) * (0.4 + 0.6*masuk);
+        b.style.transform = 'translate('+(x-24)+'px,'+(y-62)+'px) scale('+sc+')';
+        b.style.zIndex = s > 0 ? 20 : 5;
+      });
+      pestaRAF = requestAnimationFrame(langkah);
+    };
+    pestaRAF = requestAnimationFrame(langkah);
+    pestaTimer = setTimeout(() => { $('pestaBesar').classList.add('muncul'); konfeti(); }, 2600);
+    konfeti();
+  }
+  function tutupPesta(){ cancelAnimationFrame(pestaRAF); clearTimeout(pestaTimer); tutup('modalPesta'); }
+
+  /** '2026-10-25 22:44:10' → '25 Okt 2026, 22:44' */
+  function fmtInput(ts){
+    const m = /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/.exec(ts || '');
+    return m ? (+m[3])+' '+BLN[m[2]-1].slice(0,3)+' '+m[1]+', '+m[4]+':'+m[5] : (ts || '-');
+  }
+  function fmtTglPendek(t){ if(!t) return '-'; const [y,m,d]=t.split('-').map(Number); return d+' '+BLN[m-1]+' '+y; }
+  function ucapanUltah(u){
+    return 'Selamat ulang tahun ke-'+u.umur+', '+u.nama+'! 🎂🎉\nSemoga sehat selalu, panjang umur, dimudahkan segala urusan, dan makin sukses dalam tugas.\n\nSalam hangat,\nKeluarga besar Varham 🙏';
+  }
+  async function salinUcapan(i){
+    const teks = ucapanUltah(S.adm.ultah[i]);
+    try{ await navigator.clipboard.writeText(teks); toast('Ucapan disalin, tinggal tempel di WhatsApp'); }
+    catch(e){ prompt('Salin ucapan berikut:', teks); }
+  }
+
+  async function ambilFoto(ids, progres){
+    const perlu = ids.filter(i => !(i in S.foto));
+    for (let i = 0; i < perlu.length; i += 4){
+      if (progres) progres(i, perlu.length);
+      const r = await api('getFoto', S.token, perlu.slice(i, i+4));
+      Object.assign(S.foto, r);
+    }
+    return ids.map(i => S.foto[i]).filter(Boolean);
+  }
+
+  async function lihatFoto(id){
+    const l = S.dash.laporan.find(x => x.id === id); if (!l) return;
+    $('fotoView').innerHTML = '<div class="kosong">Memuat foto…</div>'; buka('modalFoto');
+    try{
+      const src = await ambilFoto(l.foto);
+      $('fotoView').innerHTML = src.length ? src.map(s => '<img src="'+s+'">').join('') : '<div class="kosong">Foto tidak ditemukan.</div>';
+    }catch(e){ $('fotoView').innerHTML = '<div class="kosong">'+esc(pesanErr(e))+'</div>'; }
+  }
+
+  async function hapusLap(id){
+    const l = S.dash.laporan.find(x => x.id === id);
+    if (!l || !confirm('Hapus laporan "'+l.rhk+'" tanggal '+fmtTgl(l.tanggal)+'?\nFoto juga akan dihapus.')) return;
+    loader(true, 'Menghapus…');
+    try{ await api('hapusLaporan', S.token, id); toast('Laporan dihapus'); await muatDashboard(); }
+    catch(e){ toast(pesanErr(e), true); }
+    finally{ loader(false); }
+  }
+
+  // ---------- form laporan ----------
+  function bukaForm(id){
+    const d = S.dash;
+    const l = id ? d.laporan.find(x => x.id === id) : null;
+    buangUnggahan();
+    S.editId = l ? l.id : null;
+    $('formLap').reset();
+    ['1','2'].forEach(n => { $('fPrev'+n).innerHTML=''; $('fFoto'+n+'Teks').textContent=''; });
+    S.gps = {}; S.slot = {};
+    S.gpsAwal = mintaLokasi();   // minta izin & panaskan GPS sejak form dibuka
+    $('formAlert').classList.add('hidden');
+    $('modalFormJudul').textContent = l ? '✏️ Edit Laporan' : 'Tambah Laporan';
+    $('btnKirim').textContent = l ? 'SIMPAN PERUBAHAN' : 'KIRIM LAPORAN';
+    $('labelFoto1').textContent = l ? 'DOKUMENTASI FOTO 1' : 'DOKUMENTASI FOTO 1 *';
+    const daftar = d.rhkList.slice();
+    if (l && daftar.indexOf(l.rhk) < 0) daftar.push(l.rhk);
+    $('fRhk').innerHTML = '<option value="">Pilih RHK</option>' + daftar.map(r => {
+      const rk = d.rekap.find(x => x.rhk === r);
+      const ket = rk && rk.target > 0 ? (rk.jumlah < rk.target ? '  (kurang '+(rk.target-rk.jumlah)+')' : '  ✓') : '';
+      return '<option value="'+esc(r)+'">'+esc(r+ket)+'</option>';
+    }).join('');
+    $('fTanggal').max = d.hariIni;
+    if (l){
+      $('fRhk').value = l.rhk; $('fUraian').value = l.uraian; $('fTanggal').value = l.tanggal;
+      $('fWaktu').value = l.waktu; $('fTempat').value = l.tempat;
+      l.foto.forEach((fid, i) => {
+        const n = String(i+1);
+        $('fFoto'+n+'Teks').textContent = 'Foto saat ini — pilih Kamera/Galeri bila ingin mengganti';
+        $('fPrev'+n).innerHTML = '<div class="kosong">Memuat foto…</div>';
+        ambilFoto([fid]).then(src => { if (S.editId === l.id && !S.slot[n]) $('fPrev'+n).innerHTML = src[0] ? '<img src="'+src[0]+'">' : ''; }).catch(() => {});
+      });
+    } else {
+      $('fTanggal').value = d.hariIni;
+      const n = new Date(); $('fWaktu').value = String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+    }
+    buka('modalForm');
+  }
+  function editLap(id){ bukaForm(id); }
+
+  function zonaWaktu(){
+    const o = -new Date().getTimezoneOffset()/60;
+    return o === 7 ? 'WIB' : o === 8 ? 'WITA' : o === 9 ? 'WIT' : 'GMT'+(o>=0?'+':'')+o;
+  }
+  function fmtWaktuFoto(d){
+    const p = v => String(v).padStart(2,'0');
+    return HARI[d.getDay()]+', '+d.getDate()+' '+BLN[d.getMonth()]+' '+d.getFullYear()+' • '+p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds())+' '+zonaWaktu();
+  }
+  function keInputWaktu(d){
+    const p = v => String(v).padStart(2,'0');
+    return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+  }
+
+  /** Ambil titik GPS perangkat (tidak pernah gagal: kalau error, hasilnya {err}). */
+  function mintaLokasi(){
+    return new Promise(res => {
+      if (!navigator.geolocation) return res({ err:'Perangkat tidak mendukung GPS' });
+      navigator.geolocation.getCurrentPosition(
+        p => res({ lat:p.coords.latitude, lng:p.coords.longitude, akurasi:Math.round(p.coords.accuracy) }),
+        e => res({ err: e.code === 1 ? 'Izin lokasi ditolak' : 'Lokasi GPS tidak ditemukan' }),
+        { enableHighAccuracy:true, timeout:20000, maximumAge:60000 });
+    });
+  }
+  // HP/tablet: tombol Kamera langsung membuka aplikasi kamera bawaan (harus dipanggil seketika saat tombol diketuk)
+  const PERANGKAT_SENTUH = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || matchMedia('(pointer: coarse)').matches;
+  function pilihFoto(n, sumber){
+    if (sumber !== 'kamera') return $('fGaleri'+n).click();
+    if (PERANGKAT_SENTUH){
+      S.gps = S.gps || {}; S.gps[n] = mintaLokasi();
+      $('fKamera'+n).click();          // kamera HP terbuka langsung
+    } else bukaKamera(n);               // laptop: coba webcam
+  }
+
+  // ---------- kamera dalam aplikasi: tombol Kamera langsung membuka kamera ----------
+  let kStream = null, kSlot = null, kHadap = 'environment';
+  async function bukaKamera(n){
+    kSlot = n; S.gps = S.gps || {}; S.gps[n] = mintaLokasi();
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ $('fKamera'+n).click(); return; }
+    try{
+      await nyalakanKamera();
+      $('kInfo').textContent = '📍 Mencari lokasi GPS…';
+      buka('modalKamera');
+      S.gps[n].then(g => { $('kInfo').textContent = g.err ? '⚠️ '+g.err+' — foto tetap bisa diambil' : '📍 Lokasi siap (±'+g.akurasi+' m)'; });
+    }catch(e){
+      tutupKamera();
+      // Apps Script tidak mengizinkan webcam laptop; beri pilihan lain (klik ini adalah ketukan baru, jadi tidak diblokir)
+      $('fotoView').innerHTML = '<div class="alert kuning"><b>📷 Kamera laptop tidak bisa dipakai</b>'+
+        'Google Apps Script tidak mengizinkan aplikasi web memakai webcam laptop. Untuk foto ber-cap lokasi, '+
+        '<b style="display:inline">buka aplikasi ini di HP</b> lalu ketuk Kamera.</div>'+
+        '<div class="aksi"><button class="btn putih" type="button" onclick="tutup(\'modalFoto\');$(\'fKamera'+n+'\').click()">📁 Pilih file foto</button>'+
+        '<button class="btn" type="button" onclick="tutup(\'modalFoto\')">Tutup</button></div>';
+      buka('modalFoto');
+    }
+  }
+  async function nyalakanKamera(){
+    matikanKamera();
+    kStream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:{ ideal:kHadap }, width:{ ideal:1920 }, height:{ ideal:1080 } }, audio:false });
+    const v = $('kVideo'); v.srcObject = kStream;
+    v.style.transform = kHadap === 'user' ? 'scaleX(-1)' : '';
+    try{ await v.play(); }catch(e){}
+  }
+  function matikanKamera(){ if (kStream){ kStream.getTracks().forEach(t => t.stop()); kStream = null; } }
+  function tutupKamera(){ matikanKamera(); tutup('modalKamera'); }
+  async function gantiKamera(){
+    kHadap = kHadap === 'environment' ? 'user' : 'environment';
+    try{ await nyalakanKamera(); }catch(e){ kHadap = kHadap === 'environment' ? 'user' : 'environment'; toast('Kamera lain tidak tersedia', true); try{ await nyalakanKamera(); }catch(x){} }
+  }
+  async function jepret(){
+    const v = $('kVideo'); if (!v.videoWidth) return toast('Kamera belum siap, tunggu sebentar', true);
+    const c = document.createElement('canvas'); c.width = v.videoWidth; c.height = v.videoHeight;
+    c.getContext('2d').drawImage(v, 0, 0);
+    const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.92));
+    const n = kSlot; tutupKamera();
+    prosesFile(n, new File([blob], 'kamera.jpg', { type:'image/jpeg', lastModified:Date.now() }), true);
+  }
+
+  /** Buang foto yang sudah terunggah tapi batal dipakai. */
+  function buangUnggahan(slot){
+    const ids = [];
+    ['1','2'].forEach(n => {
+      if (slot && slot !== n) return;
+      const u = S.up[n];
+      if (u){ u.batal = true; if (u.id) ids.push(u.id); else u.promise.then(r => api('hapusFotoSementara', S.token, [r.id]).catch(()=>{})).catch(()=>{}); }
+      delete S.up[n];
+    });
+    if (ids.length) api('hapusFotoSementara', S.token, ids).catch(()=>{});
+  }
+  function batalForm(){ buangUnggahan(); S.editId = null; tutup('modalForm'); }
+
+  function statusFoto(n, teks, warna){
+    const el = $('fPrev'+n).querySelector('.st-up');
+    if (el){ el.textContent = teks; el.style.color = warna || 'var(--abu)'; }
+  }
+
+  ['1','2'].forEach(n => {
+    $('fKamera'+n).addEventListener('change', e => { const f = e.target.files[0]; e.target.value = ''; if (f) prosesFile(n, f, true); });
+    $('fGaleri'+n).addEventListener('change', e => { const f = e.target.files[0]; e.target.value = ''; if (f) prosesFile(n, f, false); });
+  });
+
+  /** Baca tanggal asli & GPS dari data EXIF foto JPG (kalau ada). */
+  async function bacaExif(file){
+    try{
+      const v = new DataView(await file.slice(0, 256*1024).arrayBuffer());
+      if (v.getUint16(0) !== 0xFFD8) return {};
+      let o = 2;
+      while (o < v.byteLength - 10){
+        const m = v.getUint16(o), len = v.getUint16(o+2);
+        if (m === 0xFFE1 && v.getUint32(o+4) === 0x45786966) return bacaTiff(v, o+10);
+        if ((m & 0xFF00) !== 0xFF00) break;
+        o += 2 + len;
+      }
+    }catch(e){}
+    return {};
+  }
+  function bacaTiff(v, t){
+    const hasil = {};
+    try{
+      const le = v.getUint16(t) === 0x4949;
+      const u16 = p => v.getUint16(p, le), u32 = p => v.getUint32(p, le);
+      const ifd = p => { const n = u16(p), r = {}; for (let i = 0; i < n; i++){ const e = p+2+i*12; r[u16(e)] = { count:u32(e+4), off:e+8 }; } return r; };
+      const teks = en => { const p = en.count > 4 ? t + u32(en.off) : en.off; let s = ''; for (let i = 0; i < en.count-1; i++) s += String.fromCharCode(v.getUint8(p+i)); return s; };
+      const tgl = s => { const m = /(\d{4}):(\d{2}):(\d{2}) (\d{2}):(\d{2}):(\d{2})/.exec(s); return m ? new Date(+m[1], m[2]-1, +m[3], +m[4], +m[5], +m[6]) : null; };
+      const ifd0 = ifd(t + u32(t+4));
+      if (ifd0[0x8769]){ const ex = ifd(t + u32(ifd0[0x8769].off)); const d = ex[0x9003] || ex[0x9004]; if (d) hasil.tanggal = tgl(teks(d)); }
+      if (!hasil.tanggal && ifd0[0x0132]) hasil.tanggal = tgl(teks(ifd0[0x0132]));
+      if (ifd0[0x8825]){
+        const g = ifd(t + u32(ifd0[0x8825].off));
+        const rat = p => u32(p) / u32(p+4);
+        const derajat = en => { const p = t + u32(en.off); return rat(p) + rat(p+8)/60 + rat(p+16)/3600; };
+        if (g[2] && g[4]){
+          let lat = derajat(g[2]), lng = derajat(g[4]);
+          if (g[1] && String.fromCharCode(v.getUint8(g[1].off)) === 'S') lat = -lat;
+          if (g[3] && String.fromCharCode(v.getUint8(g[3].off)) === 'W') lng = -lng;
+          if (isFinite(lat) && isFinite(lng) && (lat || lng)){ hasil.lat = lat; hasil.lng = lng; }
+        }
+      }
+    }catch(e){}
+    return hasil;
+  }
+
+  async function cariAlamat(lat, lng){
+    try{
+      const r = await Promise.race([ api('alamatDari', S.token, lat, lng), tunggu(6000).then(() => ({ alamat:'' })) ]);
+      return (r && r.alamat) || '';
+    }catch(e){ return ''; }
+  }
+
+  async function prosesFile(n, f, dariKamera){
+    buangUnggahan(n);
+    const teks = t => $('fFoto'+n+'Teks').textContent = t;
+    try{
+      const sl = { file:f, kamera:dariKamera, nama: S.dash ? S.dash.nama : S.nama, lokasi:null };
+      if (dariKamera){
+        sl.waktu = new Date();                       // waktu jepret, tidak bisa diubah
+        teks('📍 Mengambil titik lokasi GPS…');
+        let g = await ((S.gps && S.gps[n]) || mintaLokasi());
+        if (g.err && S.gpsAwal){ const g2 = await S.gpsAwal; if (!g2.err) g = g2; }
+        if (g.err){ sl.lokasiErr = g.err; toast(g.err+'. Nyalakan GPS dan izinkan lokasi agar foto bertanda lokasi.', true); }
+        else { teks('🗺️ Mencari nama lokasi…'); sl.lokasi = { lat:g.lat, lng:g.lng, akurasi:g.akurasi, alamat: await cariAlamat(g.lat, g.lng) }; }
+        if (sl.lokasi && sl.lokasi.alamat && !$('fTempat').value.trim()) $('fTempat').value = sl.lokasi.alamat.slice(0, 200);
+      } else {
+        // foto galeri: dikirim apa adanya; tanggal asli foto hanya dicatat untuk admin
+        teks('⏳ Memproses foto…');
+        const ex = await bacaExif(f);
+        sl.waktuAsli = ex.tanggal || new Date(f.lastModified || Date.now());
+      }
+      S.slot[n] = sl;
+      await gambarSlot(n);
+    }catch(err){
+      $('fPrev'+n).innerHTML = ''; teks(''); delete S.slot[n]; toast(pesanErr(err), true);
+    }
+  }
+
+  /** Siapkan foto untuk slot n (kamera: diberi cap, galeri: polos), tampilkan, lalu unggah di latar belakang. */
+  async function gambarSlot(n){
+    const sl = S.slot[n]; if (!sl) return;
+    const dataUrl = await prosesFoto(sl.file, sl.kamera ? {
+      nama: sl.nama, waktu: fmtWaktuFoto(sl.waktu),
+      lat: sl.lokasi ? sl.lokasi.lat : null, lng: sl.lokasi ? sl.lokasi.lng : null,
+      akurasi: sl.lokasi ? sl.lokasi.akurasi : null, alamat: sl.lokasi ? sl.lokasi.alamat : '',
+      lokasiErr: sl.lokasiErr || ''
+    } : null);
+    sl.dataUrl = dataUrl;
+    $('fPrev'+n).innerHTML = '<img src="'+dataUrl+'">'+
+      '<div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap">'+
+      (sl.kamera ? '<button type="button" class="btn putih kecil" onclick="simpanKeGaleri(\''+n+'\')">💾 Simpan ke Galeri</button>' : '')+
+      '<span class="catatan st-up" style="margin:0">⏳ Mengunggah…</span></div>';
+    $('fFoto'+n+'Teks').textContent = (sl.kamera ? '📷 Dari kamera' + (sl.lokasi ? ' · 📍 ' + (sl.lokasi.alamat || 'koordinat tersimpan') : '') : '🖼️ Dari galeri (foto asli, tanpa cap)') +
+      ' — ketuk Kamera/Galeri untuk mengganti';
+    buangUnggahan(n);
+    const u = { dataUrl: dataUrl, id: null, gagal: null, lokasi: sl.lokasi ? { lat:sl.lokasi.lat, lng:sl.lokasi.lng, alamat:sl.lokasi.alamat } : null };
+    u.promise = api('uploadFoto', S.token, dataUrl);
+    u.promise.then(r => { if (u.batal) return; u.id = r.id; S.foto[r.id] = dataUrl; statusFoto(n, '✅ Foto terunggah', 'var(--hijau)'); })
+             .catch(err => { u.gagal = pesanErr(err); statusFoto(n, '❌ Gagal mengunggah: '+u.gagal+' — pilih ulang fotonya', 'var(--merah)'); });
+    S.up[n] = u;
+  }
+
+  /** Simpan foto ber-cap ke HP (lewat menu Bagikan, unduhan, atau tekan lama gambar). */
+  async function simpanKeGaleri(n){
+    const sl = S.slot[n]; if (!sl || !sl.dataUrl) return;
+    const nama = 'RHK_' + String(sl.nama).replace(/[^\w]+/g, '_') + '_' + keInputWaktu(sl.waktu).replace(/[-:T]/g, '') + '.jpg';
+    try{
+      const blob = await (await fetch(sl.dataUrl)).blob();
+      const file = new File([blob], nama, { type:'image/jpeg' });
+      if (navigator.canShare && navigator.canShare({ files:[file] })){
+        try{ await navigator.share({ files:[file], title:nama }); return; }
+        catch(e){ if (e && e.name === 'AbortError') return; }
+      }
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = nama;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+    }catch(e){}
+    $('fotoView').innerHTML = '<div class="alert hijau" style="margin-bottom:10px"><b>💾 Simpan ke Galeri</b>'+
+      'Jika foto belum masuk Galeri / folder Download: <b style="display:inline">tekan lama gambar di bawah</b> lalu pilih <i>Simpan gambar</i> / <i>Download gambar</i>.</div>'+
+      '<img src="'+sl.dataUrl+'">';
+    buka('modalFoto');
+  }
+
+  // lambang Kemensos (dari file logo resmi yang diberikan kantor), dimuat sekali saja
+  const LOGO_KEMENSOS = 'data:image/png;base64,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';
+  let janjiLogo = null;
+  function logoKemensos(){
+    if (!janjiLogo) janjiLogo = new Promise(res => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = LOGO_KEMENSOS; });
+    return janjiLogo;
+  }
+
+  /** Siluet putih lambang (sedikit lebih besar) untuk dijadikan garis tepi. */
+  function tepiPutih(img, lw, lh, t){
+    const c = document.createElement('canvas'); c.width = lw + t*2; c.height = lh + t*2;
+    const g = c.getContext('2d');
+    for (let a = 0; a < 16; a++){ const r = a/16*Math.PI*2; g.drawImage(img, t + Math.cos(r)*t, t + Math.sin(r)*t, lw, lh); }
+    g.globalCompositeOperation = 'source-in'; g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);
+    return c;
+  }
+
+  /** Pecah teks panjang menjadi beberapa baris sesuai lebar. */
+  function bungkusTeks(ctx, teks, maks, batas){
+    const kata = String(teks).split(/\s+/), baris = [];
+    let b = '';
+    kata.forEach(k => { const coba = b ? b+' '+k : k; if (ctx.measureText(coba).width > maks && b){ baris.push(b); b = k; } else b = coba; });
+    if (b) baris.push(b);
+    if (baris.length > batas){ baris.length = batas; baris[batas-1] = baris[batas-1].replace(/.{0,3}$/, '…'); }
+    return baris;
+  }
+
+  function muatGambar(file){
+    return new Promise((res, rej) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => { URL.revokeObjectURL(url); res(img); };
+      img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('Foto tidak bisa dibaca. Gunakan format JPG atau PNG.')); };
+      img.src = url;
+    });
+  }
+
+  function pasTeks(ctx, teks, maksLebar, ukuran, tebal){
+    let fs = ukuran;
+    do { ctx.font = (tebal?'bold ':'')+fs+'px Segoe UI, Arial, sans-serif'; fs--; }
+    while (ctx.measureText(teks).width > maksLebar && fs > 9);
+  }
+
+  /** Perkecil foto (maks 1024px) + cap: nama, lokasi & koordinat (bila ada), hari-tanggal-jam. */
+  async function prosesFoto(file, info){
+    const img = await muatGambar(file);
+    const MAX = 1024;
+    const s = Math.min(1, MAX / Math.max(img.naturalWidth, img.naturalHeight));
+    const w = Math.round(img.naturalWidth * s), h = Math.round(img.naturalHeight * s);
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const x = c.getContext('2d');
+    x.drawImage(img, 0, 0, w, h);
+    if (!info) return c.toDataURL('image/jpeg', 0.8);   // foto galeri: hanya diperkecil, tanpa cap
+
+    const f1 = Math.max(14, Math.round(w/30)), f2 = Math.round(f1*0.78), pad = Math.round(f1*0.7), lh = Math.round(f2*1.35);
+
+    // logo + tulisan Kemensos di kiri atas, tanpa latar
+    const logo = await logoKemensos();
+    {
+      const sisi = Math.min(w, h);
+      const lh0 = Math.round(sisi * 0.11), lw0 = logo ? Math.round(lh0 * logo.naturalWidth / logo.naturalHeight) : 0;
+      const p = Math.round(lh0 * 0.16), gap = Math.round(lh0 * 0.14);
+      const fA = Math.round(lh0 * 0.30), fB = Math.round(lh0 * 0.22);
+      x.font = '800 '+fA+'px Segoe UI, Arial, sans-serif'; const tA = x.measureText('KEMENTERIAN SOSIAL').width;
+      x.font = '600 '+fB+'px Segoe UI, Arial, sans-serif'; const tB = x.measureText('REPUBLIK INDONESIA').width;
+      const bx = pad, by = pad, bw = p*2 + (logo ? lw0 + gap : 0) + Math.max(tA, tB), bh = lh0 + p*2, r = Math.round(bh/5);
+      let tx = bx + p;
+      if (logo){
+        // garis tepi putih di sekeliling lambang agar tidak menyatu dengan latar hijau
+        const tepi = tepiPutih(logo, lw0, lh0, Math.max(2, Math.round(lh0/28)));
+        const t = (tepi.width - lw0) / 2;
+        x.drawImage(tepi, tx - t, by + p - t);
+        x.drawImage(logo, tx, by + p, lw0, lh0);
+        tx += lw0 + gap;
+      }
+      // tulisan putih dengan garis tepi & bayangan gelap agar jelas di foto terang maupun gelap
+      x.textAlign = 'left'; x.textBaseline = 'alphabetic'; x.lineJoin = 'round';
+      const tulis = (teks, font, y) => {
+        x.font = font;
+        x.shadowColor = 'rgba(0,0,0,.55)'; x.shadowBlur = Math.round(fA/3);
+        x.strokeStyle = 'rgba(0,0,0,.55)'; x.lineWidth = Math.max(2, Math.round(fA/6)); x.strokeText(teks, tx, y);
+        x.shadowColor = 'transparent'; x.shadowBlur = 0;
+        x.fillStyle = '#fff'; x.fillText(teks, tx, y);
+      };
+      tulis('KEMENTERIAN SOSIAL', '800 '+fA+'px Segoe UI, Arial, sans-serif', by + p + lh0*0.47);
+      tulis('REPUBLIK INDONESIA', '700 '+fB+'px Segoe UI, Arial, sans-serif', by + p + lh0*0.82);
+      x.shadowColor = 'transparent'; x.shadowBlur = 0;
+    }
+
+    const adaLokasi = info.lat != null;
+    const kiri = adaLokasi ? pad + Math.round(f1*1.6) : pad, maks = w - kiri - pad;
+    x.font = f2+'px Segoe UI, Arial, sans-serif';
+    const baris = [];
+    if (adaLokasi){
+      bungkusTeks(x, info.alamat || 'Nama lokasi tidak tersedia', maks, 2).forEach(t => baris.push({ t:t, warna:'#fff' }));
+      baris.push({ t:'Lat '+info.lat.toFixed(6)+'°   Long '+info.lng.toFixed(6)+'°'+(info.akurasi?'   (±'+info.akurasi+' m)':''), warna:'#a7f3d0' });
+    } else if (info.lokasiErr){
+      baris.push({ t:'Lokasi tidak tersedia ('+info.lokasiErr+')', warna:'#fecaca' });
+    }
+    baris.push({ t:info.waktu, warna:'#fde68a' });
+
+    const ph = pad*2 + Math.round(f1*1.3) + baris.length*lh, y0 = h - ph;
+    const g = x.createLinearGradient(0, y0, 0, h);
+    g.addColorStop(0, 'rgba(11,60,93,0.78)'); g.addColorStop(1, 'rgba(15,138,108,0.88)');
+    x.fillStyle = g; x.fillRect(0, y0, w, ph);
+    x.fillStyle = '#FFD700'; x.fillRect(0, y0, w, Math.max(2, Math.round(f1/8)));
+    if (adaLokasi){   // ikon pin lokasi
+      const px = pad + f1*0.6, py = y0 + pad + f1*0.7, r = f1*0.55;
+      x.fillStyle = '#ef4444';
+      x.beginPath(); x.arc(px, py, r, Math.PI, 0); x.lineTo(px, py + r*1.9); x.closePath(); x.fill();
+      x.fillStyle = '#fff'; x.beginPath(); x.arc(px, py, r*0.42, 0, Math.PI*2); x.fill();
+    }
+    x.textAlign = 'left'; x.textBaseline = 'alphabetic';
+    pasTeks(x, info.nama, maks, f1, true); x.fillStyle = '#fff';
+    let yy = y0 + pad + f1;
+    x.fillText(info.nama, kiri, yy);
+    yy += Math.round(f1*0.3);
+    baris.forEach(b => { yy += lh; pasTeks(x, b.t, maks, f2, false); x.fillStyle = b.warna; x.fillText(b.t, kiri, yy); });
+    return c.toDataURL('image/jpeg', 0.72);
+  }
+
+  $('formLap').addEventListener('submit', async e => {
+    e.preventDefault();
+    const al = $('formAlert'); al.classList.add('hidden');
+    const salah = m => { al.textContent = m; al.classList.remove('hidden'); al.scrollIntoView({behavior:'smooth'}); };
+    if (!$('fRhk').value) return salah('Pilih RHK terlebih dahulu.');
+    if ($('fUraian').value.trim().length < 5) return salah('Uraian kegiatan terlalu singkat.');
+    if ($('fTanggal').value > S.dash.hariIni) return salah('Tanggal tidak boleh melewati hari ini.');
+    if (!$('fTempat').value.trim()) return salah('Tempat kegiatan wajib diisi.');
+    const edit = S.editId ? S.dash.laporan.find(x => x.id === S.editId) : null;
+    if (!S.up['1'] && !(edit && edit.foto[0])) return salah('Foto 1 wajib diunggah.');
+
+    const btn = $('btnKirim'); btn.disabled = true;
+    try{
+      // biasanya foto sudah selesai terunggah; kalau belum, tunggu sebentar
+      const daftar = ['1','2'].filter(n => S.up[n]);
+      if (daftar.some(n => !S.up[n].id)) loader(true, 'Menyelesaikan unggah foto…');
+      for (const n of daftar){
+        const u = S.up[n];
+        if (u.gagal) throw new Error('Foto '+n+' gagal terunggah. Pilih ulang fotonya.');
+        if (!u.id) await u.promise;
+        if (!u.id) throw new Error('Foto '+n+' gagal terunggah. Coba pilih ulang.');
+      }
+      loader(true, edit ? 'Menyimpan perubahan…' : 'Menyimpan laporan…');
+      const p2 = v => String(v).padStart(2,'0');
+      const tglJam = d => p2(d.getDate())+'/'+p2(d.getMonth()+1)+'/'+d.getFullYear()+' '+p2(d.getHours())+':'+p2(d.getMinutes());
+      const data = {
+        rhk: $('fRhk').value,
+        uraian: $('fUraian').value.trim(),
+        tanggal: $('fTanggal').value,
+        waktu: $('fWaktu').value,
+        tempat: $('fTempat').value.trim(),
+        foto1Id: S.up['1'] ? S.up['1'].id : '',
+        foto2Id: S.up['2'] ? S.up['2'].id : '',
+        lokasi: (S.up['1'] && S.up['1'].lokasi) || (S.up['2'] && S.up['2'].lokasi) || null,
+        sumber: ['1','2'].filter(n => S.slot[n] && S.up[n]).map(n => {
+          const sl = S.slot[n];
+          return sl.kamera ? 'Foto '+n+': Kamera' : 'Foto '+n+': Galeri (tgl asli '+tglJam(sl.waktuAsli)+')';
+        }).join(' | ')
+      };
+
+      if (edit){
+        const r = await api('editLaporan', S.token, edit.id, data);
+        S.up = {}; S.editId = null;
+        tutup('modalForm');
+        toast('✅ Perubahan disimpan');
+        if (r.bulan !== S.bulan){ S.bulan = r.bulan; $('pBulan').value = r.bulan; }
+        await muatDashboard();
+        return;
+      }
+
+      const r = await api('simpanLaporan', S.token, data);
+      S.up = {};   // foto sudah resmi dipakai, jangan dibuang
+      tutup('modalForm');
+
+      if (r.bulan === S.bulan){
+        // perbarui layar langsung tanpa memuat ulang semua data
+        const d = S.dash;
+        d.laporan.unshift(r.laporan);
+        d.laporan.sort((a,b) => (b.tanggal+b.waktu+b.ts).localeCompare(a.tanggal+a.waktu+a.ts));
+        const rk = d.rekap.find(x => x.rhk === r.laporan.rhk);
+        if (rk) rk.jumlah++; else d.rekap.push({ rhk:r.laporan.rhk, target:0, jumlah:1 });
+        renderPegawai();
+        toast('✅ Laporan berhasil dikirim');
+      } else {
+        S.bulan = r.bulan; $('pBulan').value = r.bulan;
+        toast('Laporan tersimpan di bulan '+fmtBulan(r.bulan));
+        await muatDashboard();
+      }
+    }catch(err){ salah(pesanErr(err)); }
+    finally{ btn.disabled = false; loader(false); }
+  });
+
+  // ---------- cetak ----------
+  function cetak(){
+    const d = S.dash;
+    if (!d || !d.laporan.length) return toast('Belum ada laporan di bulan ini untuk dicetak', true);
+    buatCetakan(d.laporan, true);
+  }
+  function cetakSatu(id){
+    const l = S.dash.laporan.find(x => x.id === id); if (l) buatCetakan([l], false);
+  }
+  async function buatCetakan(daftarLap, denganRekap){
+    const d = S.dash;
+    loader(true, 'Menyiapkan cetak…');
+    try{
+      const semua = [].concat(...daftarLap.map(l => l.foto));
+      await ambilFoto(semua, (i, n) => $('loaderTeks').textContent = 'Mengambil foto '+Math.min(i+4,n)+' dari '+n+'…');
+
+      const urut = daftarLap.slice().sort((a,b) => (a.tanggal+a.waktu).localeCompare(b.tanggal+b.waktu));
+      const wmTeks = esc(d.nama + ' • ' + APP);
+      const now = new Date();
+      const dicetak = now.getDate()+' '+BLN[now.getMonth()]+' '+now.getFullYear()+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+      const satu = urut.length === 1 && !denganRekap;
+
+      let h = '<div class="wm"><div class="wm-in">'+('<span>'+wmTeks+'</span>').repeat(120)+'</div></div><div class="ct">';
+      h += '<div class="ct-head">'+LOGO+'<div><h1>'+esc(APP.toUpperCase())+'</h1><p>'+(satu ? 'Laporan Kegiatan' : 'Laporan Kegiatan Bulan '+esc(fmtBulan(d.bulan)))+'</p></div></div>';
+      h += '<table class="info"><tr><td style="width:120px">Nama</td><td>: <b>'+esc(d.nama)+'</b></td></tr>'+
+           (d.nip ? '<tr><td>NIP</td><td>: '+esc(d.nip)+'</td></tr>' : '')+
+           (satu ? '<tr><td>Tanggal kegiatan</td><td>: '+esc(fmtTgl(urut[0].tanggal))+'</td></tr>'
+                 : '<tr><td>Periode</td><td>: '+esc(fmtBulan(d.bulan))+'</td></tr><tr><td>Jumlah laporan</td><td>: '+urut.length+' kegiatan</td></tr>')+
+           '<tr><td>Dicetak</td><td>: '+esc(dicetak)+'</td></tr></table>';
+
+      if (denganRekap){
+        h += '<h3>A. Rekapitulasi per RHK</h3><table class="grid"><tr><th>No</th><th>RHK</th><th>Target</th><th>Realisasi</th><th>Keterangan</th></tr>';
+        d.rekap.forEach((r, i) => {
+          const ket = r.target <= 0 ? '-' : r.jumlah >= r.target ? 'Tercapai'+(r.jumlah>r.target?' (+'+(r.jumlah-r.target)+')':'') : 'Kurang '+(r.target-r.jumlah);
+          h += '<tr><td style="text-align:center">'+(i+1)+'</td><td>'+esc(r.rhk)+'</td><td style="text-align:center">'+r.target+'</td><td style="text-align:center">'+r.jumlah+'</td><td>'+ket+'</td></tr>';
+        });
+        h += '</table><h3>B. Rincian Kegiatan</h3>';
+      } else if (!satu) h += '<h3>Rincian Kegiatan</h3>';
+
+      urut.forEach((l, i) => {
+        const imgs = l.foto.map(f => S.foto[f]).filter(Boolean);
+        h += '<div class="ct-item"><div class="no">'+(satu ? '' : (i+1)+'. ')+esc(l.rhk)+'</div><table>'+
+             '<tr><td>Hari, tanggal</td><td>: '+esc(fmtTgl(l.tanggal))+', pukul '+esc(l.waktu)+'</td></tr>'+
+             '<tr><td>Tempat</td><td>: '+esc(l.tempat)+'</td></tr>'+
+             (l.ts ? '<tr><td>Tanggal input</td><td>: '+esc(fmtInput(l.ts))+'</td></tr>' : '')+
+             (l.koordinat ? '<tr><td>Lokasi foto</td><td>: '+esc(l.alamat ? l.alamat+' — ' : '')+esc(l.koordinat)+'</td></tr>' : '')+
+             '<tr><td>Uraian</td><td>: '+esc(l.uraian).replace(/\n/g,'<br>')+'</td></tr></table>'+
+             (imgs.length ? '<div class="ct-foto">'+imgs.map(s => '<img src="'+s+'">').join('')+'</div>' : '')+
+             '</div>';
+      });
+
+      h += '<div class="ct-ttd"><div>'+esc(now.getDate()+' '+BLN[now.getMonth()]+' '+now.getFullYear())+'<br>Pelapor,<div class="spasi"></div><b><u>'+esc(d.nama)+'</u></b>'+(d.nip ? '<br>NIP. '+esc(d.nip) : '')+'</div></div></div>';
+
+      const area = $('areaCetak'); area.innerHTML = h;
+      await Promise.all([...area.querySelectorAll('img')].map(im => im.complete ? 0 : new Promise(r => { im.onload = im.onerror = r; })));
+      loader(false);
+      setTimeout(() => window.print(), 150);
+    }catch(e){ loader(false); toast(pesanErr(e), true); }
+  }
+  window.addEventListener('afterprint', () => { $('areaCetak').innerHTML = ''; });
+
+  // ---------- admin ----------
+  const TAB_ADMIN = ['rekap','data','member','target','atur'];
+  document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('aktif', x === b));
+    TAB_ADMIN.forEach(t => $('tab-'+t).classList.toggle('hidden', t !== b.dataset.tab));
+    $('aBarBulan').classList.toggle('hidden', !['rekap','data'].includes(b.dataset.tab));
+    if (b.dataset.tab === 'atur') muatInfoAdmin();
+  }));
+  $('aBulan').addEventListener('change', () => { if($('aBulan').value){ S.abulan = $('aBulan').value; S.pilih = null; muatAdmin(); } });
+  ['dMember','dRhk'].forEach(i => $(i).addEventListener('change', renderData));
+  $('dCari').addEventListener('input', renderData);
+  $('tgtDaftar').addEventListener('input', () => { S.targetDiubah = true; });
+
+  // data admin diperbarui otomatis tiap 1 menit & setiap kali halaman dibuka kembali
+  let timerAdmin = 0;
+  function mulaiAutoAdmin(){
+    clearInterval(timerAdmin);
+    timerAdmin = setInterval(() => { if (S.role === 'admin' && !document.hidden) muatAdmin(true); }, 60000);
+  }
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && S.role === 'admin') muatAdmin(true); });
+
+  async function muatAdmin(diam){
+    if (!diam) loader(true, 'Memuat data…');
+    try{ S.adm = await api('adminData', S.token, S.abulan); renderAdmin(); }
+    catch(e){ if (!diam) toast(pesanErr(e), true); }
+    finally{ if (!diam) loader(false); }
+  }
+
+  const urlFoto = fid => 'https://drive.google.com/file/d/'+fid+'/view';
+  const urlPeta = k => 'https://www.google.com/maps?q='+encodeURIComponent(k);
+  async function salinTeks(t){
+    try{ await navigator.clipboard.writeText(t); toast('📋 Link disalin'); }
+    catch(e){ prompt('Salin link berikut:', t); }
+  }
+  function selFoto(fid){
+    if (!fid) return '-';
+    const u = urlFoto(fid);
+    return '<div class="sel-foto"><a href="'+u+'" target="_blank" rel="noopener"><img src="https://drive.google.com/thumbnail?id='+fid+'&sz=w200" loading="lazy" alt="foto" onerror="this.style.display=\'none\'"></a>'+
+           '<div><a href="'+u+'" target="_blank" rel="noopener">🔗 Buka</a> <button class="lnk" type="button" onclick="salinTeks(\''+u+'\')">📋 Salin</button></div></div>';
+  }
+  function nipDari(pid){ const p = S.adm.pegawai.find(x => x.id === pid); return p && p.nip ? p.nip : ''; }
+
+  /** Tabel laporan admin. lengkap = semua kolom seperti sheet Laporan. */
+  function tabelLaporanAdmin(list, lengkap){
+    if (!list.length) return '<div class="kosong">Belum ada laporan.</div>';
+    let t = '<table class="tdata"><thead><tr><th>No</th>'+
+      (lengkap ? '<th>Tanggal Input</th><th>Nama</th><th>NIP</th>' : '<th>Tanggal Input</th>')+
+      '<th>RHK</th><th>Uraian</th><th>Hari, Tanggal</th><th>Waktu</th><th>Tempat</th><th>Foto 1</th><th>Foto 2</th><th>Koordinat</th>'+
+      (lengkap ? '<th>Alamat Lokasi Foto</th><th>Sumber Foto</th>' : '')+'</tr></thead><tbody>';
+    list.forEach((l, i) => {
+      t += '<tr><td>'+(i+1)+'</td>'+
+        '<td style="white-space:nowrap">'+esc(fmtInput(l.ts))+'</td>'+
+        (lengkap ? '<td style="white-space:nowrap"><b>'+esc(l.nama)+'</b></td><td>'+esc(nipDari(l.pid))+'</td>' : '')+
+        '<td style="white-space:nowrap">'+esc(l.rhk)+'</td><td class="wrap">'+esc(l.uraian)+'</td>'+
+        '<td style="white-space:nowrap">'+esc(fmtTgl(l.tanggal))+'</td><td>'+esc(l.waktu)+'</td><td>'+esc(l.tempat)+'</td>'+
+        '<td>'+selFoto(l.foto[0])+'</td><td>'+selFoto(l.foto[1])+'</td>'+
+        '<td style="white-space:nowrap">'+(l.koordinat ? '<a href="'+urlPeta(l.koordinat)+'" target="_blank" rel="noopener">🗺️ '+esc(l.koordinat)+'</a>' : '-')+'</td>'+
+        (lengkap ? '<td class="wrap">'+esc(l.alamat || '-')+'</td><td class="wrap">'+esc(l.sumber || '-')+'</td>' : '')+
+      '</tr>';
+    });
+    return t + '</tbody></table>';
+  }
+
+  function renderAdmin(){
+    const a = S.adm;
+    $('aWaktuMuat').textContent = 'Diperbarui '+a.diperbarui+' · otomatis tiap 1 menit';
+    // Ulang tahun
+    $('aUltah').innerHTML = a.ultah.length
+      ? '<div class="ultah-list"><b class="j">🎂 Ulang tahun member (7 hari ke depan)</b>'+
+        a.ultah.map((u, i) => '<div class="ultah-item"><div><b>'+esc(u.nama)+'</b> — ke-'+u.umur+'<br><small>'+
+          (u.hari === 0 ? '🎉 <b style="color:#be185d">HARI INI</b>' : u.hari === 1 ? 'Besok' : u.hari+' hari lagi')+
+          ' · lahir '+esc(fmtTglPendek(u.lahir))+'</small></div>'+
+          '<button class="btn putih kecil" onclick="salinUcapan('+i+')">📋 Salin ucapan</button></div>').join('')+'</div>'
+      : '';
+    // Rekap
+    const aktif = a.rekap.filter(r => r.aktif);
+    const lengkap = aktif.filter(r => r.kurang === 0).length;
+    $('aRingkas').innerHTML =
+      '<div><b>'+aktif.length+'</b><span>Member aktif</span></div>'+
+      '<div><b style="color:var(--hijau)">'+lengkap+'</b><span>Target lengkap</span></div>'+
+      '<div><b style="color:var(--merah)">'+(aktif.length-lengkap)+'</b><span>Masih kurang</span></div>';
+    const rhk = a.target;
+    let t = '<tr><th>Nama</th>'+rhk.map(r => '<th title="'+esc(r.rhk)+'">'+esc(labelRhk(r.rhk))+'<br><small>tgt '+r.target+'</small></th>').join('')+'<th>Total</th><th>Status</th></tr>';
+    aktif.forEach(p => {
+      t += '<tr class="klik'+(S.pilih === p.id ? ' dipilih' : '')+'" onclick="pilihMember(\''+p.id+'\')"><td>▸ <b>'+esc(p.nama)+'</b></td>';
+      rhk.forEach(r => {
+        const x = p.rekap.find(k => k.rhk === r.rhk) || { jumlah:0, target:r.target };
+        const kls = x.target <= 0 ? '' : x.jumlah >= x.target ? 'c-ok' : 'c-kurang';
+        t += '<td class="'+kls+'">'+x.jumlah+'</td>';
+      });
+      t += '<td><b>'+p.total+'</b></td><td>'+(p.kurang ? '<span class="st kurang">Kurang '+p.kurang+' RHK</span>' : '<span class="st ok">Lengkap</span>')+'</td></tr>';
+    });
+    if (!aktif.length) t += '<tr><td colspan="'+(rhk.length+3)+'" style="text-align:center">Belum ada member. Tambahkan di tab Member.</td></tr>';
+    $('aTabel').innerHTML = t;
+    $('aLegend').innerHTML = rhk.map(r => '<b>'+esc(labelRhk(r.rhk))+'</b> = '+esc(r.rhk)).join(' · ') + '<br>Angka merah = belum mencapai target, hijau = tercapai.';
+    renderDetail();
+
+    // Data laporan: isi pilihan filter (pertahankan pilihan yang sedang aktif)
+    const pm = $('dMember').value, pr = $('dRhk').value;
+    $('dMember').innerHTML = '<option value="">👥 Semua member</option>'+a.pegawai.map(p => '<option value="'+esc(p.id)+'">'+esc(p.nama)+'</option>').join('');
+    $('dRhk').innerHTML = '<option value="">🎯 Semua RHK</option>'+rhk.map(r => '<option value="'+esc(r.rhk)+'">'+esc(r.rhk)+'</option>').join('');
+    $('dMember').value = pm; $('dRhk').value = pr;
+    renderData();
+
+    // Member
+    $('pegJml').textContent = a.pegawai.length;
+    $('pegDaftar').innerHTML = a.pegawai.map(p =>
+      '<div class="peg"><div><div class="nm">'+esc(p.nama)+(p.aktif?'':' <span class="st info">Nonaktif</span>')+'</div>'+
+      '<small>NIP. '+(p.nip ? esc(p.nip) : '<span style="color:var(--merah)">belum diisi</span>')+'</small><br>'+
+      '<small>'+esc(p.id)+' · 🎂 '+(p.lahir ? esc(fmtTglPendek(p.lahir)) : '<span style="color:var(--merah)">tgl lahir belum diisi</span>')+'</small><br>'+
+      '<small>Token: </small><span class="tok">'+esc(p.token)+'</span></div>'+
+      '<div class="btns">'+
+        '<button class="btn putih kecil" onclick="editPeg(\''+p.id+'\')">Edit</button>'+
+        '<button class="btn putih kecil" onclick="tokenBaru(\''+p.id+'\')">Token baru</button>'+
+        '<button class="btn merah kecil" onclick="hapusPeg(\''+p.id+'\')">Hapus</button>'+
+      '</div></div>').join('') || '<div class="kosong">Belum ada member. Klik ➕ Tambah Member.</div>';
+
+    // Target (jangan ditimpa saat admin sedang mengubahnya)
+    if (!S.targetDiubah){
+      $('tgtDaftar').innerHTML = '';
+      a.target.forEach(r => tambahBarisTarget(r.rhk, r.target));
+    }
+  }
+
+  function pilihMember(pid){
+    S.pilih = (pid && S.pilih !== pid) ? pid : null;
+    renderAdmin();
+    if (S.pilih) setTimeout(() => $('aDetail').scrollIntoView({ behavior:'smooth', block:'start' }), 50);
+  }
+  function renderDetail(){
+    const a = S.adm, box = $('aDetail');
+    const p = S.pilih && a.rekap.find(x => x.id === S.pilih);
+    if (!p){ box.innerHTML = ''; return; }
+    const lap = a.laporan.filter(l => l.pid === p.id);
+    box.innerHTML = '<div class="detail"><div class="detail-head"><div><h3>📌 '+esc(p.nama)+'</h3>'+
+      '<small>NIP. '+esc(p.nip || '-')+' · '+esc(fmtBulan(a.bulan))+' · '+lap.length+' laporan</small></div>'+
+      '<button class="x" onclick="pilihMember(null)" title="Tutup">×</button></div>'+
+      '<div class="detail-grid"><div><h2>Rekap Target</h2>'+htmlRekap(p.rekap)+'</div>'+
+      '<div><h2>Laporan</h2><div class="tdata-wrap">'+tabelLaporanAdmin(lap, false)+'</div></div></div></div>';
+  }
+  function renderData(){
+    const a = S.adm; if (!a) return;
+    const m = $('dMember').value, r = $('dRhk').value, q = $('dCari').value.trim().toLowerCase();
+    const list = a.laporan.filter(l => (!m || l.pid === m) && (!r || l.rhk === r) &&
+      (!q || (l.uraian+' '+l.tempat+' '+l.nama+' '+(l.alamat||'')).toLowerCase().indexOf(q) > -1));
+    $('dJumlah').textContent = list.length+' laporan · '+fmtBulan(a.bulan);
+    $('dTabel').innerHTML = tabelLaporanAdmin(list, true);
+  }
+
+  async function bagikanFotoLama(){
+    if (!confirm('Aktifkan link untuk semua foto lama?\nSetelah ini, siapa pun yang memegang link foto bisa melihat fotonya.')) return;
+    let total = 0, gagal = 0;
+    try{
+      for (let i = 0; i < 40; i++){
+        loader(true, 'Mengaktifkan link foto… ('+total+' selesai)');
+        const r = await api('adminBagikanFotoLama', S.token);
+        total += r.berhasil; gagal += r.gagal;
+        if (!r.sisa || (r.berhasil === 0 && r.gagal > 0)) break;
+      }
+      alert('Selesai. '+total+' foto kini bisa dibuka lewat link.'+(gagal ? '\n'+gagal+' foto gagal (mungkin dibatasi kebijakan akun Google kantor).' : ''));
+    }catch(e){ toast(pesanErr(e), true); }
+    finally{ loader(false); }
+  }
+
+  // ---------- member (data pegawai) ----------
+  function bukaFormMember(){
+    $('formPeg').reset(); $('pegId').value=''; $('pegAktif').checked=true;
+    $('pegFormJudul').textContent='➕ Tambah Member';
+    $('pegLahir').max = hariIniStr();
+    buka('modalMember');
+  }
+  function resetFormPeg(){ bukaFormMember(); }
+  function editPeg(id){
+    const p = S.adm.pegawai.find(x => x.id === id); if (!p) return;
+    bukaFormMember();
+    $('pegId').value = p.id; $('pegNama').value = p.nama; $('pegNip').value = p.nip || ''; $('pegLahir').value = p.lahir || ''; $('pegToken').value = p.token; $('pegAktif').checked = p.aktif;
+    $('pegFormJudul').textContent = '✏️ Edit Member — '+p.id;
+  }
+  $('formPeg').addEventListener('submit', async e => {
+    e.preventDefault();
+    const baru = !$('pegId').value;
+    if (!$('pegNama').value.trim()) return toast('Nama wajib diisi', true);
+    if (!$('pegLahir').value) return toast('Tanggal lahir wajib diisi', true);
+    loader(true, 'Menyimpan…');
+    try{
+      const r = await api('adminSimpanPegawai', S.token, { id:$('pegId').value, nama:$('pegNama').value, nip:$('pegNip').value, lahir:$('pegLahir').value, token:$('pegToken').value, aktif:$('pegAktif').checked });
+      tutup('modalMember');
+      if (baru) alert('Member tersimpan.\nToken Log-in: '+r.token+'\n\nBerikan token ini kepada member yang bersangkutan.');
+      else toast('Data member diperbarui');
+      await muatAdmin();
+    }catch(err){ toast(pesanErr(err), true); }
+    finally{ loader(false); }
+  });
+  async function tokenBaru(id){
+    const p = S.adm.pegawai.find(x => x.id === id); if (!p) return;
+    if (!p.lahir) { editPeg(id); return toast('Lengkapi tanggal lahir '+p.nama+' dulu, lalu simpan', true); }
+    if (!confirm('Buat token baru untuk '+p.nama+'?\nToken lama tidak bisa dipakai lagi.')) return;
+    loader(true, 'Membuat token…');
+    try{
+      const r = await api('adminSimpanPegawai', S.token, { id:p.id, nama:p.nama, nip:p.nip, lahir:p.lahir, token:'', aktif:p.aktif });
+      alert('Token baru '+p.nama+': '+r.token); await muatAdmin();
+    }catch(err){ toast(pesanErr(err), true); }
+    finally{ loader(false); }
+  }
+  async function hapusPeg(id){
+    const p = S.adm.pegawai.find(x => x.id === id); if (!p) return;
+    if (!confirm('Hapus member '+p.nama+'?\nLaporan yang sudah masuk tetap tersimpan di Spreadsheet.\n\nSaran: gunakan Edit → hilangkan centang "Aktif" jika hanya ingin menonaktifkan.')) return;
+    loader(true, 'Menghapus…');
+    try{ await api('adminHapusPegawai', S.token, id); toast('Member dihapus'); await muatAdmin(); }
+    catch(err){ toast(pesanErr(err), true); }
+    finally{ loader(false); }
+  }
+
+  function tambahBarisTarget(nama, target){
+    const div = document.createElement('div'); div.className = 'trow';
+    div.innerHTML = '<input class="tNama" placeholder="Nama RHK" value="'+esc(nama||'')+'">'+
+                    '<input class="tTarget" type="number" min="0" max="999" value="'+(target==null?1:target)+'">'+
+                    '<button class="x" title="Hapus" type="button">×</button>';
+    div.querySelector('button').onclick = () => div.remove();
+    $('tgtDaftar').appendChild(div);
+  }
+  async function simpanTarget(){
+    const list = [...document.querySelectorAll('#tgtDaftar .trow')].map(r => ({ rhk:r.querySelector('.tNama').value.trim(), target:r.querySelector('.tTarget').value }));
+    loader(true, 'Menyimpan target…');
+    try{ await api('adminSimpanTarget', S.token, list); S.targetDiubah = false; toast('✅ Target tersimpan'); await muatAdmin(); }
+    catch(err){ toast(pesanErr(err), true); }
+    finally{ loader(false); }
+  }
+
+  async function gantiTokenAdmin(){
+    const t = $('admTokenBaru').value.trim().toUpperCase();
+    if (!t) return;
+    if (!confirm('Ganti token admin menjadi '+t+'?')) return;
+    loader(true, 'Menyimpan…');
+    try{
+      await api('adminGantiToken', S.token, t);
+      S.token = t; simpanToken(t, tokenDiingat());
+      $('admTokenBaru').value=''; alert('Token admin diganti menjadi: '+t+'\nCatat baik-baik.');
+    }catch(err){ toast(pesanErr(err), true); }
+    finally{ loader(false); }
+  }
+  let infoDimuat = false;
+  async function muatInfoAdmin(){
+    if (infoDimuat) return;
+    try{ const r = await api('adminInfo', S.token); $('lnkSheet').href = r.urlSheet; $('lnkFolder').href = r.urlFolder; infoDimuat = true; }catch(e){}
+  }
+
+  // ---------- tokoh petugas PKH (laki-laki & perempuan) ----------
+  function tokohSvg(jenis){
+    const kulit = jenis === 'L' ? '#e8b48e' : '#f1c09b';
+    const baju = '#38bdf8', lengan = '#0ea5e9', bawah = jenis === 'L' ? '#1e293b' : '#334155';
+    const kepala = jenis === 'L'
+      ? '<rect x="54" y="64" width="12" height="14" rx="4" fill="'+kulit+'"/>'+
+        '<circle cx="41" cy="49" r="4.5" fill="'+kulit+'"/><circle cx="79" cy="49" r="4.5" fill="'+kulit+'"/>'+
+        '<ellipse cx="60" cy="47" rx="19" ry="21" fill="'+kulit+'"/>'+
+        '<path d="M40,44 Q37,20 60,19 Q83,20 80,44 Q76,31 64,30 Q52,33 44,31 Q41,36 40,44Z" fill="#1f2937"/>'+
+        '<path d="M49,40 L56,39 M64,39 L71,40" stroke="#1f2937" stroke-width="2.2" stroke-linecap="round"/>'
+      : '<path d="M30,52 Q28,86 48,90 L72,90 Q92,86 90,52 Z" fill="#be185d"/>'+
+        '<circle cx="60" cy="46" r="29" fill="#be185d"/>'+
+        '<path d="M37,33 Q60,17 83,33" stroke="#9d174d" stroke-width="3" fill="none" opacity=".55"/>'+
+        '<ellipse cx="60" cy="50" rx="18" ry="20" fill="'+kulit+'"/>';
+    const badan = jenis === 'L'
+      ? '<path d="M35,80 Q60,72 85,80 L88,132 Q60,138 32,132 Z" fill="'+baju+'"/>'+
+        '<path d="M52,77 L60,88 L68,77" fill="#fff" opacity=".9"/>'+
+        '<rect x="33" y="128" width="54" height="6" rx="3" fill="#0f172a"/>'
+      : '<path d="M36,80 Q60,70 84,80 L92,140 Q60,149 28,140 Z" fill="'+baju+'"/>'+
+        '<path d="M28,140 Q60,149 92,140 L90.5,131 Q60,140 29.5,131 Z" fill="#0284c7"/>';
+    const mataY = jenis === 'L' ? 47 : 48;
+    return '<svg viewBox="0 0 120 190" class="tk" aria-hidden="true">'+
+      '<ellipse cx="60" cy="184" rx="28" ry="4" fill="rgba(15,23,42,.18)"/>'+
+      '<g class="tk-kakiL"><rect x="47" y="128" width="11" height="46" rx="5.5" fill="'+bawah+'"/><ellipse cx="51" cy="176" rx="9" ry="5" fill="#0f172a"/></g>'+
+      '<g class="tk-kakiR"><rect x="62" y="128" width="11" height="46" rx="5.5" fill="'+bawah+'"/><ellipse cx="69" cy="176" rx="9" ry="5" fill="#0f172a"/></g>'+
+      '<g class="tk-badan">'+
+        '<g class="tk-lenganL"><rect x="27" y="80" width="11" height="44" rx="5.5" fill="'+lengan+'"/><circle cx="32.5" cy="126" r="6" fill="'+kulit+'"/></g>'+
+        '<g class="tk-lenganR"><rect x="82" y="80" width="11" height="44" rx="5.5" fill="'+lengan+'"/><circle cx="87.5" cy="126" r="6" fill="'+kulit+'"/></g>'+
+        badan +
+        '<g class="tk-teks"><rect x="41" y="96" width="38" height="20" rx="5" fill="#facc15"/>'+
+          '<text x="60" y="111" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="17" fill="#0b4f6c">'+(jenis === 'L' ? 'V' : 'Y')+'</text></g>'+
+        kepala +
+        '<g class="tk-mata"><ellipse cx="53" cy="'+mataY+'" rx="2.6" ry="3.2" fill="#1e293b"/><ellipse cx="67" cy="'+mataY+'" rx="2.6" ry="3.2" fill="#1e293b"/></g>'+
+        '<circle cx="48.5" cy="56" r="3.3" fill="#fb7185" opacity="'+(jenis==='L'?'.25':'.5')+'"/><circle cx="71.5" cy="56" r="3.3" fill="#fb7185" opacity="'+(jenis==='L'?'.25':'.5')+'"/>'+
+        '<path d="M54,58.5 Q60,64 66,58.5" stroke="#9f1239" stroke-width="2" fill="none" stroke-linecap="round"/>'+
+        (jenis === 'P' ? '<circle cx="60" cy="88" r="3" fill="#facc15"/>' : '')+
+      '</g></svg>';
+  }
+  $('tokohL').querySelector('.arah').innerHTML = tokohSvg('L');
+  $('tokohP').querySelector('.arah').innerHTML = tokohSvg('P');
+
+  // ---------- animasi login: bertemu, salaman, tos, lalu form muncul dari bawah ----------
+  const tunggu = ms => new Promise(r => setTimeout(r, ms));
+  let animJalan = false, animLewat = false;
+  // posisi tokoh relatif terhadap titik tengah (M): tangan bertemu tepat di tengah
+  const POS = { L: -106, P: 6, tosL: -96, tosP: -4 };
+  function geser(el, dari, ke, dur, easing){
+    const a = el.animate([{ transform:'translateX('+dari+'px)' }, { transform:'translateX('+ke+'px)' }],
+                         { duration:dur, easing:easing || 'linear', fill:'forwards' });
+    return a.finished.catch(() => {});
+  }
+  function bicara(teks, pusat){
+    const g = $('gelembung'), W = $('lajur').clientWidth;
+    g.innerHTML = teks; g.classList.add('tampil');
+    const bw = g.offsetWidth;
+    const kiri = Math.max(4, Math.min(W - bw - 4, pusat - bw/2));
+    g.style.left = kiri + 'px';
+    g.style.setProperty('--ekor', Math.max(16, Math.min(bw - 16, pusat - kiri)) + 'px');
+  }
+  function diamBicara(){ $('gelembung').classList.remove('tampil'); }
+
+  async function animasiLogin(){
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || !Element.prototype.animate) return tampilAkhirLogin();
+    const W = $('lajur').clientWidth, M = W/2, cw = 100;
+    const L = $('tokohL'), P = $('tokohP'), kartu = $('kartuLogin'), tos = $('tosEfek');
+    const cek = () => { if (animLewat) throw 'lewat'; };
+    animJalan = true; animLewat = false;
+    $('btnLewati').classList.remove('hidden');
+    try{
+      [L, P].forEach(t => t.style.left = '0px');
+      kartu.style.transform = 'translateY(115%)'; kartu.style.opacity = '0';
+      tos.classList.remove('pop');
+
+      // 1. laki-laki dari kiri, perempuan dari kanan
+      L.className = 'tokoh jalan'; P.className = 'tokoh jalan';
+      const ease = 'cubic-bezier(.3,.6,.4,1)';
+      await Promise.all([ geser(L, -cw-10, M+POS.L, 2100, ease), geser(P, W+10, M+POS.P, 2100, ease) ]); cek();
+
+      // 2. berjabat tangan
+      L.className = 'tokoh salaman'; P.className = 'tokoh salaman';
+      bicara('Assalamualaikum, apa kabar? 🤝', M);
+      await tunggu(1500); cek(); diamBicara();
+
+      // 3. tos!
+      L.className = 'tokoh diam'; P.className = 'tokoh diam';
+      await tunggu(150); cek();
+      L.className = 'tokoh tos'; P.className = 'tokoh tos';
+      await Promise.all([ geser(L, M+POS.L, M+POS.tosL, 180, 'ease-in'), geser(P, M+POS.P, M+POS.tosP, 180, 'ease-in') ]);
+      tos.classList.add('pop');
+      await tunggu(900); cek();
+
+      // 4. mundur sedikit, form token naik dari bawah
+      L.className = 'tokoh diam'; P.className = 'tokoh diam';
+      geser(L, M+POS.tosL, M+POS.L, 300); geser(P, M+POS.tosP, M+POS.P, 300);
+      tos.classList.remove('pop');
+      const naik = kartu.animate([{ transform:'translateY(115%)', opacity:0 }, { transform:'translateY(-10px)', opacity:1, offset:.8 }, { transform:'translateY(0)', opacity:1 }],
+                                 { duration:900, easing:'cubic-bezier(.2,.8,.3,1)', fill:'forwards' });
+      await naik.finished.catch(() => {}); cek();
+      bicara('Selamat datang! 😊 Silakan masukkan token Anda.', M);
+      await tunggu(2600); cek();
+      tampilAkhirLogin();
+    }catch(e){ tampilAkhirLogin(); }
+  }
+  function lewatiAnimasi(){ animLewat = true; tampilAkhirLogin(); }
+  function tampilAkhirLogin(){
+    animJalan = false;
+    const L = $('tokohL'), P = $('tokohP'), kartu = $('kartuLogin');
+    [L, P, kartu].forEach(el => { if (el.getAnimations) el.getAnimations().forEach(a => a.cancel()); });
+    kartu.style.transform = ''; kartu.style.opacity = '';
+    L.style.transform = ''; P.style.transform = '';
+    L.style.left = 'calc(50% - 106px)'; P.style.left = 'calc(50% + 6px)';
+    L.className = 'tokoh diam'; P.className = 'tokoh diam';
+    $('tosEfek').classList.remove('pop');
+    $('btnLewati').classList.add('hidden'); diamBicara();
+  }
+  $('lajur').addEventListener('click', () => { if (animJalan) lewatiAnimasi(); });
+
+  // ---------- foto layar penuh: ketuk foto mana pun di form atau di "Lihat foto" ----------
+  document.addEventListener('click', e => {
+    const im = e.target.closest && e.target.closest('.preview img, .foto-view img');
+    if (!im) return;
+    $('layarPenuhImg').src = im.src; buka('layarPenuh');
+  });
+  function tutupLayarPenuh(){ tutup('layarPenuh'); $('layarPenuhImg').removeAttribute('src'); }
+
+  // ---------- mulai ----------
+  aturTombolInstall();
+  (function(){
+    const t = ambilToken();
+    if (t){ $('inToken').value = t; masuk(t, tokenDiingat()); }
+    else animasiLogin();
+  })();
+</script>
+</body>
+</html>
