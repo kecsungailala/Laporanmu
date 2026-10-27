@@ -455,6 +455,7 @@
           <select id="dMember"></select>
           <select id="dRhk"></select>
           <input id="dCari" placeholder="🔎 Cari uraian / tempat / nama…">
+          <label style="display:flex;align-items:center;gap:8px;margin:0;font-weight:600;border:1px solid #cbd5e1;border-radius:9px;padding:0 12px;background:#fff"><input type="checkbox" id="dGanda" style="width:auto"> ⚠️ Hanya foto ganda</label>
         </div>
         <div class="catatan" id="dJumlah" style="margin:0 0 6px"></div>
         <div class="tdata-wrap"><table class="tdata" id="dTabel"></table></div>
@@ -487,6 +488,9 @@
         <h2 style="margin-top:20px">Link Foto</h2>
         <div class="catatan" style="margin-bottom:8px">Foto baru otomatis bisa dibuka lewat link. Klik tombol ini sekali untuk mengaktifkan link pada foto-foto yang diunggah sebelum fitur ini ada.</div>
         <button class="btn putih full" onclick="bagikanFotoLama()">🔗 Aktifkan link foto lama</button>
+        <h2 style="margin-top:20px">Deteksi Foto Ganda</h2>
+        <div class="catatan" style="margin-bottom:8px">Foto baru otomatis diperiksa saat member memilih foto. Foto yang diunggah sebelum fitur ini ada perlu dibuatkan "sidik foto" dulu agar ikut diperiksa. <b id="infoSidik"></b></div>
+        <button class="btn putih full" onclick="periksaFotoLama()">🔎 Periksa foto lama</button>
         <h2 style="margin-top:20px">Data</h2>
         <div class="aksi">
           <a class="btn putih" id="lnkSheet" target="_blank" href="#">📑 Spreadsheet</a>
@@ -847,7 +851,8 @@
       ? '<table class="tlap"><thead><tr><th>RHK</th><th>Hari, Tanggal &amp; Waktu</th><th>Uraian</th><th>Lokasi</th><th>Tanggal Input</th><th>Aksi</th></tr></thead><tbody>'+
         d.laporan.map(l =>
           '<tr>'+
-            '<td data-label="RHK"><div><span class="chip">'+esc(labelRhk(l.rhk))+'</span><div class="kecil">'+esc(l.rhk.replace(/^RHK\s*\d+\s*/i,''))+'</div></div></td>'+
+            '<td data-label="RHK"><div><span class="chip">'+esc(labelRhk(l.rhk))+'</span><div class="kecil">'+esc(l.rhk.replace(/^RHK\s*\d+\s*/i,''))+'</div>'+
+              (l.ganda && l.ganda.length ? '<span class="st kurang" style="margin-top:4px" title="Foto mirip dengan laporan lain">⚠️ Foto ganda</span>' : '')+'</div></td>'+
             '<td data-label="Waktu"><div>'+esc(fmtTgl(l.tanggal))+'<div class="kecil">Pukul '+esc(l.waktu)+'</div></div></td>'+
             '<td data-label="Uraian" class="ur">'+esc(l.uraian)+'</td>'+
             '<td data-label="Lokasi"><div>'+esc(l.tempat)+(l.koordinat ? '<div class="kecil">🛰️ '+esc(l.koordinat)+'</div>' : '')+'</div></td>'+
@@ -1210,6 +1215,73 @@
     }
   }
 
+  // ---------- sidik foto (untuk deteksi foto ganda per member) ----------
+  // Dihitung dari bagian tengah foto (di luar logo & panel cap), jadi foto yang sama tetap
+  // dikenali walau diperkecil, dikirim ulang lewat WhatsApp, atau dicap dengan jam berbeda.
+  const BATAS_SAMA = 12, BATAS_MIRIP = 28;
+  function sidikFoto(src){
+    return new Promise((res) => {
+      const img = new Image();
+      img.onload = () => {
+        try{
+          const c = document.createElement('canvas'); c.width = 17; c.height = 16;
+          const x = c.getContext('2d');
+          const w = img.naturalWidth, h = img.naturalHeight;
+          x.drawImage(img, 0, Math.round(h*0.20), w, Math.round(h*0.42), 0, 0, 17, 16);
+          const d = x.getImageData(0, 0, 17, 16).data, abu = [];
+          for (let i = 0; i < 17*16; i++) abu.push(d[i*4]*0.299 + d[i*4+1]*0.587 + d[i*4+2]*0.114);
+          let hex = '';
+          for (let y = 0; y < 16; y++) for (let k = 0; k < 16; k += 4){
+            let v = 0;
+            for (let b = 0; b < 4; b++){ const i = y*17 + k + b; v = (v << 1) | (abu[i] > abu[i+1] ? 1 : 0); }
+            hex += v.toString(16);
+          }
+          res(hex);
+        }catch(e){ res(''); }
+      };
+      img.onerror = () => res('');
+      img.src = src;
+    });
+  }
+  function jarakSidik(a, b){
+    if (!a || !b || a.length !== 64 || b.length !== 64) return 999;
+    let d = 0;
+    for (let i = 0; i < 64; i++){ let v = parseInt(a[i],16) ^ parseInt(b[i],16); while (v){ d += v & 1; v >>= 1; } }
+    return d;
+  }
+
+  /** Periksa apakah foto di slot n pernah dipakai member ini; tampilkan peringatan di bawah foto. */
+  async function periksaGanda(n){
+    const sl = S.slot[n]; if (!sl || !sl.sidik) return;
+    const kotak = $('fGanda'+n); if (!kotak) return;
+    sl.tolak = false; sl.mirip = null;
+    const lain = S.slot[n === '1' ? '2' : '1'];
+    if (lain && lain.sidik && jarakSidik(sl.sidik, lain.sidik) <= BATAS_SAMA){
+      sl.tolak = true; buangUnggahan(n);
+      kotak.innerHTML = '<div class="alert merah" style="margin:8px 0 0"><b>⛔ Foto 1 dan Foto 2 sama</b>Gunakan dua foto yang berbeda. Ketuk Kamera/Galeri untuk mengganti.</div>';
+      statusFoto(n, '', '');
+      return;
+    }
+    kotak.innerHTML = '<div class="catatan" style="margin-top:6px">🔎 Memeriksa foto ganda…</div>';
+    let g = [];
+    try{ g = await api('cekFotoGanda', S.token, sl.sidik, S.editId || ''); }catch(e){ kotak.innerHTML = ''; return; }
+    if (S.slot[n] !== sl) return;   // foto sudah diganti selagi memeriksa
+    if (!g.length){ kotak.innerHTML = '<div class="catatan" style="margin-top:6px;color:var(--hijau)">✅ Foto belum pernah Anda pakai</div>'; return; }
+    const m = g[0];
+    const info = esc(m.rhk)+' · '+esc(fmtTgl(m.tanggal));
+    if (m.sama){
+      sl.tolak = true; buangUnggahan(n); statusFoto(n, '', '');
+      kotak.innerHTML = '<div class="alert merah" style="margin:8px 0 0"><b>⛔ Foto ini sudah pernah Anda pakai</b>di laporan <b style="display:inline">'+info+'</b>. Satu foto hanya boleh dipakai untuk satu laporan — silakan ganti fotonya.'+
+        '<div id="fGandaImg'+n+'" style="margin-top:6px"></div></div>';
+    } else {
+      sl.mirip = m;
+      kotak.innerHTML = '<div class="alert kuning" style="margin:8px 0 0"><b>⚠️ Foto ini sangat mirip</b>dengan foto di laporan <b style="display:inline">'+info+'</b>.'+
+        '<div id="fGandaImg'+n+'" style="margin-top:6px"></div>'+
+        '<label style="display:flex;gap:8px;align-items:flex-start;margin-top:6px;font-weight:600"><input type="checkbox" id="fKonf'+n+'" style="width:auto;margin-top:2px"> Saya pastikan ini foto kegiatan yang berbeda (laporan akan ditandai untuk diperiksa admin)</label></div>';
+    }
+    if (m.fid) ambilFoto([m.fid]).then(s => { const el = $('fGandaImg'+n); if (el && s[0]) el.innerHTML = '<small>Foto sebelumnya:</small><img src="'+s[0]+'" style="width:110px;border-radius:6px;display:block;margin-top:3px">'; }).catch(() => {});
+  }
+
   /** Siapkan foto untuk slot n (kamera: diberi cap, galeri: polos), tampilkan, lalu unggah di latar belakang. */
   async function gambarSlot(n){
     const sl = S.slot[n]; if (!sl) return;
@@ -1223,7 +1295,8 @@
     $('fPrev'+n).innerHTML = '<img src="'+dataUrl+'">'+
       '<div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap">'+
       (sl.kamera ? '<button type="button" class="btn putih kecil" onclick="simpanKeGaleri(\''+n+'\')">💾 Simpan ke Galeri</button>' : '')+
-      '<span class="catatan st-up" style="margin:0">⏳ Mengunggah…</span></div>';
+      '<span class="catatan st-up" style="margin:0">⏳ Mengunggah…</span></div>'+
+      '<div id="fGanda'+n+'"></div>';
     $('fFoto'+n+'Teks').textContent = (sl.kamera ? '📷 Dari kamera' + (sl.lokasi ? ' · 📍 ' + (sl.lokasi.alamat || 'koordinat tersimpan') : '') : '🖼️ Dari galeri (foto asli, tanpa cap)') +
       ' — ketuk Kamera/Galeri untuk mengganti';
     buangUnggahan(n);
@@ -1232,6 +1305,8 @@
     u.promise.then(r => { if (u.batal) return; u.id = r.id; S.foto[r.id] = dataUrl; statusFoto(n, '✅ Foto terunggah', 'var(--hijau)'); })
              .catch(err => { u.gagal = pesanErr(err); statusFoto(n, '❌ Gagal mengunggah: '+u.gagal+' — pilih ulang fotonya', 'var(--merah)'); });
     S.up[n] = u;
+    sl.sidik = await sidikFoto(dataUrl);
+    await periksaGanda(n);
   }
 
   /** Simpan foto ber-cap ke HP (lewat menu Bagikan, unduhan, atau tekan lama gambar). */
@@ -1385,8 +1460,15 @@
     if ($('fUraian').value.trim().length < 5) return salah('Uraian kegiatan terlalu singkat.');
     if ($('fTanggal').value > S.dash.hariIni) return salah('Tanggal tidak boleh melewati hari ini.');
     if (!$('fTempat').value.trim()) return salah('Tempat kegiatan wajib diisi.');
+    for (const n of ['1','2']){
+      const sl = S.slot[n];
+      if (sl && sl.tolak) return salah('Foto '+n+' sudah pernah dipakai / sama dengan foto lain. Silakan ganti fotonya.');
+      if (sl && sl.mirip && !($('fKonf'+n) && $('fKonf'+n).checked)) return salah('Foto '+n+' sangat mirip dengan foto laporan lain. Ganti fotonya, atau centang konfirmasi di bawah foto.');
+    }
     const edit = S.editId ? S.dash.laporan.find(x => x.id === S.editId) : null;
     if (!S.up['1'] && !(edit && edit.foto[0])) return salah('Foto 1 wajib diunggah.');
+
+    const konfirmasiMirip = ['1','2'].some(n => S.slot[n] && S.slot[n].mirip);
 
     const btn = $('btnKirim'); btn.disabled = true;
     try{
@@ -1411,9 +1493,13 @@
         foto1Id: S.up['1'] ? S.up['1'].id : '',
         foto2Id: S.up['2'] ? S.up['2'].id : '',
         lokasi: (S.up['1'] && S.up['1'].lokasi) || (S.up['2'] && S.up['2'].lokasi) || null,
+        sidik1: S.up['1'] && S.slot['1'] ? S.slot['1'].sidik || '' : '',
+        sidik2: S.up['2'] && S.slot['2'] ? S.slot['2'].sidik || '' : '',
+        konfirmasiMirip: konfirmasiMirip,
         sumber: ['1','2'].filter(n => S.slot[n] && S.up[n]).map(n => {
           const sl = S.slot[n];
-          return sl.kamera ? 'Foto '+n+': Kamera' : 'Foto '+n+': Galeri (tgl asli '+tglJam(sl.waktuAsli)+')';
+          return (sl.kamera ? 'Foto '+n+': Kamera' : 'Foto '+n+': Galeri (tgl asli '+tglJam(sl.waktuAsli)+')') +
+                 (sl.mirip ? ' — dikonfirmasi berbeda dari laporan '+sl.mirip.rhk+' tgl '+sl.mirip.tanggal : '');
         }).join(' | ')
       };
 
@@ -1519,7 +1605,7 @@
     if (b.dataset.tab === 'atur') muatInfoAdmin();
   }));
   $('aBulan').addEventListener('change', () => { if($('aBulan').value){ S.abulan = $('aBulan').value; S.pilih = null; muatAdmin(); } });
-  ['dMember','dRhk'].forEach(i => $(i).addEventListener('change', renderData));
+  ['dMember','dRhk','dGanda'].forEach(i => $(i).addEventListener('change', renderData));
   $('dCari').addEventListener('input', renderData);
   $('tgtDaftar').addEventListener('input', () => { S.targetDiubah = true; });
 
@@ -1550,6 +1636,14 @@
     return '<div class="sel-foto"><a href="'+u+'" target="_blank" rel="noopener"><img src="https://drive.google.com/thumbnail?id='+fid+'&sz=w200" loading="lazy" alt="foto" onerror="this.style.display=\'none\'"></a>'+
            '<div><a href="'+u+'" target="_blank" rel="noopener">🔗 Buka</a> <button class="lnk" type="button" onclick="salinTeks(\''+u+'\')">📋 Salin</button></div></div>';
   }
+  function selGanda(l){
+    if (l.ganda && l.ganda.length){
+      const unik = {}; l.ganda.forEach(g => { if (!unik[g.id+g.n]) unik[g.id+g.n] = g; });
+      return '<span class="st kurang">⚠️ '+(l.ganda.some(g => g.sama) ? 'Foto sama' : 'Sangat mirip')+'</span>'+
+        Object.values(unik).slice(0, 3).map(g => '<div class="kecil" style="white-space:nowrap">Foto '+g.n+' ≈ '+(g.id === l.id ? 'foto '+g.nLain+' laporan ini' : esc(labelRhk(g.rhk))+' · '+esc(fmtTglPendek(g.tanggal)))+'</div>').join('');
+    }
+    return l.adaSidik ? '<span class="st ok">✅ Aman</span>' : '<span class="st info">Belum dicek</span>';
+  }
   function nipDari(pid){ const p = S.adm.pegawai.find(x => x.id === pid); return p && p.nip ? p.nip : ''; }
 
   /** Tabel laporan admin. lengkap = semua kolom seperti sheet Laporan. */
@@ -1557,7 +1651,7 @@
     if (!list.length) return '<div class="kosong">Belum ada laporan.</div>';
     let t = '<table class="tdata"><thead><tr><th>No</th>'+
       (lengkap ? '<th>Tanggal Input</th><th>Nama</th><th>NIP</th>' : '<th>Tanggal Input</th>')+
-      '<th>RHK</th><th>Uraian</th><th>Hari, Tanggal</th><th>Waktu</th><th>Tempat</th><th>Foto 1</th><th>Foto 2</th><th>Koordinat</th>'+
+      '<th>RHK</th><th>Uraian</th><th>Hari, Tanggal</th><th>Waktu</th><th>Tempat</th><th>Foto 1</th><th>Foto 2</th><th>Cek Foto Ganda</th><th>Koordinat</th>'+
       (lengkap ? '<th>Alamat Lokasi Foto</th><th>Sumber Foto</th>' : '')+'</tr></thead><tbody>';
     list.forEach((l, i) => {
       t += '<tr><td>'+(i+1)+'</td>'+
@@ -1566,6 +1660,7 @@
         '<td style="white-space:nowrap">'+esc(l.rhk)+'</td><td class="wrap">'+esc(l.uraian)+'</td>'+
         '<td style="white-space:nowrap">'+esc(fmtTgl(l.tanggal))+'</td><td>'+esc(l.waktu)+'</td><td>'+esc(l.tempat)+'</td>'+
         '<td>'+selFoto(l.foto[0])+'</td><td>'+selFoto(l.foto[1])+'</td>'+
+        '<td>'+selGanda(l)+'</td>'+
         '<td style="white-space:nowrap">'+(l.koordinat ? '<a href="'+urlPeta(l.koordinat)+'" target="_blank" rel="noopener">🗺️ '+esc(l.koordinat)+'</a>' : '-')+'</td>'+
         (lengkap ? '<td class="wrap">'+esc(l.alamat || '-')+'</td><td class="wrap">'+esc(l.sumber || '-')+'</td>' : '')+
       '</tr>';
@@ -1576,6 +1671,7 @@
   function renderAdmin(){
     const a = S.adm;
     $('aWaktuMuat').textContent = 'Diperbarui '+a.diperbarui+' · otomatis tiap 1 menit';
+    $('infoSidik').textContent = a.tanpaSidik ? a.tanpaSidik+' laporan lama belum diperiksa.' : '✅ Semua foto sudah punya sidik.';
     // Ulang tahun
     $('aUltah').innerHTML = a.ultah.length
       ? '<div class="ultah-list"><b class="j">🎂 Ulang tahun member (7 hari ke depan)</b>'+
@@ -1600,7 +1696,8 @@
         const kls = x.target <= 0 ? '' : x.jumlah >= x.target ? 'c-ok' : 'c-kurang';
         t += '<td class="'+kls+'">'+x.jumlah+'</td>';
       });
-      t += '<td><b>'+p.total+'</b></td><td>'+(p.kurang ? '<span class="st kurang">Kurang '+p.kurang+' RHK</span>' : '<span class="st ok">Lengkap</span>')+'</td></tr>';
+      t += '<td><b>'+p.total+'</b></td><td>'+(p.kurang ? '<span class="st kurang">Kurang '+p.kurang+' RHK</span>' : '<span class="st ok">Lengkap</span>')+
+           (p.fotoGanda ? '<br><span class="st kurang" style="margin-top:3px;background:#fef3c7;color:#92400e">⚠️ '+p.fotoGanda+' laporan foto ganda</span>' : '')+'</td></tr>';
     });
     if (!aktif.length) t += '<tr><td colspan="'+(rhk.length+3)+'" style="text-align:center">Belum ada member. Tambahkan di tab Member.</td></tr>';
     $('aTabel').innerHTML = t;
@@ -1652,11 +1749,37 @@
   }
   function renderData(){
     const a = S.adm; if (!a) return;
-    const m = $('dMember').value, r = $('dRhk').value, q = $('dCari').value.trim().toLowerCase();
-    const list = a.laporan.filter(l => (!m || l.pid === m) && (!r || l.rhk === r) &&
+    const m = $('dMember').value, r = $('dRhk').value, q = $('dCari').value.trim().toLowerCase(), hg = $('dGanda').checked;
+    const list = a.laporan.filter(l => (!m || l.pid === m) && (!r || l.rhk === r) && (!hg || (l.ganda && l.ganda.length)) &&
       (!q || (l.uraian+' '+l.tempat+' '+l.nama+' '+(l.alamat||'')).toLowerCase().indexOf(q) > -1));
     $('dJumlah').textContent = list.length+' laporan · '+fmtBulan(a.bulan);
     $('dTabel').innerHTML = tabelLaporanAdmin(list, true);
+  }
+
+  async function periksaFotoLama(){
+    let selesai = 0;
+    try{
+      for (let putaran = 0; putaran < 300; putaran++){
+        const r = await api('adminFotoTanpaSidik', S.token, 12);
+        if (!r.daftar.length) break;
+        loader(true, 'Memeriksa foto lama… '+selesai+' selesai, sisa '+r.sisa);
+        for (let i = 0; i < r.daftar.length; i += 4){
+          const bag = r.daftar.slice(i, i+4);
+          const isi = await api('adminAmbilFoto', S.token, bag.map(x => x.fid));
+          const hasil = [];
+          for (const x of bag){
+            const s = isi[x.fid] ? await sidikFoto(isi[x.fid]) : '';
+            hasil.push({ id:x.id, n:x.n, sidik: s || 'x' });
+          }
+          await api('adminSimpanSidik', S.token, hasil);
+          selesai += bag.length;
+          loader(true, 'Memeriksa foto lama… '+selesai+' selesai, sisa '+Math.max(0, r.sisa - (i + bag.length)));
+        }
+      }
+      loader(false);
+      alert('Selesai. '+selesai+' foto lama sudah diperiksa.\nLaporan dengan foto ganda ditandai ⚠️ di tab Rekap dan Data Laporan.');
+      await muatAdmin();
+    }catch(e){ loader(false); toast(pesanErr(e), true); }
   }
 
   async function bagikanFotoLama(){
