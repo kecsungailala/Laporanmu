@@ -1,6 +1,6 @@
 // Service worker Laporan RHK 2026: membuat aplikasi bisa di-install dan cepat dibuka.
 // Halaman selalu diambil terbaru dari internet; salinan lama hanya dipakai saat offline.
-const CACHE = 'laporan-rhk-v5';
+const CACHE = 'laporan-rhk-v6';
 const FILE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './favicon.png'];
 
 self.addEventListener('install', e => {
