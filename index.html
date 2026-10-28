@@ -207,6 +207,13 @@
     .sel-foto{display:flex;flex-direction:column;gap:4px;min-width:96px}
     .sel-foto img{width:90px;height:68px;object-fit:cover;border-radius:6px;border:1px solid var(--garis);background:#f1f5f9}
     .sel-foto a{color:var(--biru);font-weight:600;text-decoration:none;white-space:nowrap}
+    .btn-logout{min-width:170px;padding:11px 22px;border:0;border-radius:12px;cursor:pointer;font:inherit;font-weight:700;font-size:15px;color:#fff;
+      background:linear-gradient(135deg,#ef4444,#b91c1c);box-shadow:0 6px 16px rgba(185,28,28,.3);transition:transform .15s, box-shadow .15s}
+    .btn-logout:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(185,28,28,.4)}
+    .btn-logout:active{transform:translateY(1px)}
+    .foto-jejer{display:flex;gap:10px;align-items:flex-start}
+    .foto-jejer .tgl-foto{font-size:11px;color:var(--abu);white-space:nowrap}
+    .btn-salin-semua{margin-top:6px;white-space:nowrap}
     .lnk{border:0;background:#e6f4f1;color:var(--biru);border-radius:6px;padding:2px 6px;font-size:11px;font-weight:600;cursor:pointer}
     .tbl tr.klik{cursor:pointer}
     .tbl tr.klik:hover td{background:#f0fdfa}
@@ -603,7 +610,7 @@
     </div>
   </div>
   <div class="kaki">© 2026 <b>Varhamxiank.com</b>
-    <div id="kakiKeluar" class="hidden" style="margin-top:12px"><button class="btn putih" type="button" onclick="logout()" style="min-width:160px">⎋ Log-out</button></div>
+    <div id="kakiKeluar" class="hidden" style="margin-top:12px"><button class="btn-logout" type="button" onclick="logout()">⎋ Log-out</button></div>
   </div>
 </div>
 
@@ -1025,6 +1032,8 @@
     const libur = {}; (kal && kal.libur || []).forEach(x => { libur[x.t] = x.ket || 'Libur'; });
     const hk = kal && kal.hariKerja === 6 ? 6 : 5;
     const hari = [];
+    // Laporan sudah ada sebelum tanggal daftar (mis. laporan susulan) → hitung mulai dari laporan pertama
+    Object.keys(hitung).forEach(t => { if (mulai && hitung[t] && t < mulai) mulai = t; });
     for (let d = 1; d <= jml; d++){
       const t = bulan+'-'+String(d).padStart(2,'0'), dow = new Date(y, m-1, d).getDay(), n = hitung[t] || 0;
       const kerja = dow !== 0 && (hk === 6 || dow !== 6) && !libur[t];
@@ -1053,7 +1062,7 @@
            ' title="'+esc(fmtTgl(h.t)+(label ? ' — '+label : ''))+'" aria-label="'+esc(fmtTgl(h.t)+(label ? ', '+label : ''))+'">'+h.d+sub+'</button>';
     });
     s += '</div><div class="kal-leg"><span><i style="background:#dcfce7"></i>Ada kegiatan</span><span><i style="background:#fee2e2"></i>Hari kerja kosong</span>'+
-         '<span><i style="background:#fef3c7"></i>Hari ini</span><span><i style="background:#f1f5f9"></i>Libur / akhir pekan</span></div>';
+         '<span><i style="background:#fef3c7"></i>Hari ini</span><span><i style="background:#f1f5f9"></i>Libur / akhir pekan</span><span><i style="background:#fff;border:1px solid #e2e8f0"></i>Belum tiba / belum terdaftar</span></div>';
     return s;
   }
   function hitungPerTanggal(laporan){
@@ -2105,10 +2114,11 @@
     try{ await navigator.clipboard.writeText(t); toast('📋 Link disalin'); }
     catch(e){ prompt('Salin link berikut:', t); }
   }
-  function selFoto(fid){
+  function selFoto(fid, ket){
     if (!fid) return '-';
     const u = urlFoto(fid);
     return '<div class="sel-foto"><a href="'+u+'" target="_blank" rel="noopener"><img src="https://drive.google.com/thumbnail?id='+fid+'&sz=w200" loading="lazy" alt="foto" onerror="this.style.display=\'none\'"></a>'+
+           (ket ? '<div class="tgl-foto">'+ket+'</div>' : '')+
            '<div><a href="'+u+'" target="_blank" rel="noopener">🔗 Buka</a> <button class="lnk" type="button" onclick="salinTeks(\''+u+'\')">📋 Salin</button></div></div>';
   }
   function selGanda(l){
@@ -2121,23 +2131,59 @@
   }
   function nipDari(pid){ const p = S.adm.pegawai.find(x => x.id === pid); return p && p.nip ? p.nip : ''; }
 
+  /** Khusus RHK 9: laporan yang diunggah di hari yang sama (member, uraian & tempat sama) → satu baris.
+   *  (Di sheet tetap satu baris per laporan, jadi hitungan target & kalender tidak berubah.) */
+  function gabungLaporan(list){
+    const grup = [], peta = {};
+    const r9 = r => /^RHK\s*9\b/i.test(r||'') || /MEDSOS/i.test(r||'');
+    list.forEach(l => {
+      if (!r9(l.rhk)){ grup.push([l]); return; }      // khusus RHK 9 (Upload Banyak) yang digabung
+      const k = [l.pid, l.rhk, (l.ts||'').slice(0,10), (l.uraian||'').trim().toLowerCase(), (l.tempat||'').trim().toLowerCase()].join('|');
+      if (!peta[k]){ peta[k] = []; grup.push(peta[k]); }
+      peta[k].push(l);
+    });
+    grup.forEach(g => { if (g.length > 1) g.sort((x, y) => (x.tanggal+x.waktu).localeCompare(y.tanggal+y.waktu)); });   // foto urut tanggal
+    return grup;
+  }
+  function unik(arr){ return arr.filter((x, i) => x && arr.indexOf(x) === i); }
+  function salinSemuaLink(idx){
+    const g = (window.__grupData || [])[idx]; if (!g) return;
+    const teks = g.map((l, i) => (i+1)+'. '+fmtTglPendek(l.tanggal)+' — '+l.foto.filter(Boolean).map(urlFoto).join(' , ')).join('\n');
+    navigator.clipboard.writeText(teks).then(() => toast('📋 '+g.reduce((n, l) => n + l.foto.filter(Boolean).length, 0)+' link foto disalin'), () => prompt('Salin link berikut:', teks));
+  }
   /** Tabel laporan admin. lengkap = semua kolom seperti sheet Laporan. */
   function tabelLaporanAdmin(list, lengkap){
     if (!list.length) return '<div class="kosong">Belum ada laporan.</div>';
+    const grup = gabungLaporan(list);
+    window.__grupData = grup;
     let t = '<table class="tdata"><thead><tr><th>No</th>'+
       (lengkap ? '<th>Tanggal Input</th><th>Nama</th><th>NIP</th>' : '<th>Tanggal Input</th>')+
       '<th>RHK</th><th>Uraian</th><th>Hari, Tanggal</th><th>Waktu</th><th>Tempat</th><th>Foto 1</th><th>Foto 2</th><th>Cek Foto Ganda</th><th>Koordinat</th>'+
       (lengkap ? '<th>Alamat Lokasi Foto</th><th>Sumber Foto</th>' : '')+'</tr></thead><tbody>';
-    list.forEach((l, i) => {
+    grup.forEach((g, i) => {
+      const l = g[0], banyak = g.length > 1;
+      const tgl = unik(g.map(x => x.tanggal)).sort();
+      const hariTgl = !banyak ? esc(fmtTgl(l.tanggal))
+        : '<b>'+g.length+' laporan</b><br>'+(tgl.length === 1 ? esc(fmtTgl(tgl[0])) : esc(fmtTglPendek(tgl[0]))+' s/d '+esc(fmtTglPendek(tgl[tgl.length-1])));
+      const foto = [];
+      if (banyak) g.forEach(x => x.foto.forEach(f => { if (f) foto.push(selFoto(f, esc(fmtTglPendek(x.tanggal))+(x.waktu ? ' · '+esc(x.waktu) : ''))); }));
+      const jmlFoto = foto.length;
+      const gandaList = g.filter(x => x.ganda && x.ganda.length);
+      const ganda = gandaList.length ? gandaList.map(x => (banyak ? '<div class="kecil">'+esc(fmtTglPendek(x.tanggal))+'</div>' : '')+selGanda(x)).join('')
+        : g.every(x => x.adaSidik) ? '<span class="st ok">✅ Aman</span>' : '<span class="st info" title="Dicek otomatis paling lama 15 menit">⏳ Menunggu dicek</span>';
+      const koor = unik(g.map(x => x.koordinat));
       t += '<tr><td>'+(i+1)+'</td>'+
         '<td style="white-space:nowrap">'+esc(fmtInput(l.ts))+'</td>'+
         (lengkap ? '<td style="white-space:nowrap"><b>'+esc(l.nama)+'</b></td><td>'+esc(nipDari(l.pid))+'</td>' : '')+
         '<td style="white-space:nowrap">'+esc(l.rhk)+'</td><td class="wrap">'+esc(l.uraian)+'</td>'+
-        '<td style="white-space:nowrap">'+esc(fmtTgl(l.tanggal))+'</td><td>'+esc(l.waktu)+'</td><td>'+esc(l.tempat)+'</td>'+
-        '<td>'+selFoto(l.foto[0])+'</td><td>'+selFoto(l.foto[1])+'</td>'+
-        '<td>'+selGanda(l)+'</td>'+
-        '<td style="white-space:nowrap">'+(l.koordinat ? '<a href="'+urlPeta(l.koordinat)+'" target="_blank" rel="noopener">🗺️ '+esc(l.koordinat)+'</a>' : '-')+'</td>'+
-        (lengkap ? '<td class="wrap">'+esc(l.alamat || '-')+'</td><td class="wrap">'+esc(l.sumber || '-')+'</td>' : '')+
+        '<td style="white-space:nowrap">'+hariTgl+'</td><td>'+(banyak ? '-' : esc(l.waktu))+'</td><td>'+esc(l.tempat)+'</td>'+
+        (banyak
+          ? '<td colspan="2"><div class="foto-jejer">'+foto.join('')+'</div>'+
+            '<button class="btn putih kecil btn-salin-semua" type="button" onclick="salinSemuaLink('+i+')">📋 Salin semua link ('+jmlFoto+' foto)</button></td>'
+          : '<td>'+selFoto(l.foto[0])+'</td><td>'+selFoto(l.foto[1])+'</td>')+
+        '<td>'+ganda+'</td>'+
+        '<td style="white-space:nowrap">'+(koor.length ? koor.map(k => '<a href="'+urlPeta(k)+'" target="_blank" rel="noopener">🗺️ '+esc(k)+'</a>').join('<br>') : '-')+'</td>'+
+        (lengkap ? '<td class="wrap">'+(unik(g.map(x => x.alamat)).map(esc).join('<br>') || '-')+'</td><td class="wrap">'+(unik(g.map(x => x.sumber)).map(esc).join('<br>') || '-')+'</td>' : '')+
       '</tr>';
     });
     return t + '</tbody></table>';
@@ -2255,7 +2301,8 @@
     renderKalData(dasar);
     const list = dasar.filter(l => cocokTanggal(l.tanggal, S.dTgl, ''));
     const nm = m ? (a.pegawai.find(p => p.id === m) || {}).nama : '';
-    $('dJumlah').textContent = list.length+' laporan · '+(S.dTgl ? fmtTgl(S.dTgl) : fmtBulan(a.bulan))+(nm ? ' · '+nm : '');
+    const nBaris = gabungLaporan(list).length;
+    $('dJumlah').textContent = list.length+' laporan'+(nBaris < list.length ? ' (digabung jadi '+nBaris+' baris)' : '')+' · '+(S.dTgl ? fmtTgl(S.dTgl) : fmtBulan(a.bulan))+(nm ? ' · '+nm : '');
     $('dTabel').innerHTML = tabelLaporanAdmin(list, true);
   }
 
