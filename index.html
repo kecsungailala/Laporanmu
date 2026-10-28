@@ -135,7 +135,7 @@
     /* Rekap */
     .bln-bar{display:flex;gap:8px;align-items:center;margin-bottom:12px}
     .bln-bar input{flex:1}
-    .ringkas{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+    .ringkas{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:12px}
     .ringkas div{background:linear-gradient(160deg,#f0fdfa,#eff6ff);border:1px solid #d5ece7;border-radius:10px;padding:10px;text-align:center}
     .ringkas b{display:block;font-size:20px;color:var(--biru)}
     .ringkas span{font-size:11px;color:var(--abu)}
@@ -229,6 +229,71 @@
     .kamera-tombol{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px}
     .jepret{width:68px;height:68px;border-radius:50%;border:5px solid #fff;background:#ef4444;cursor:pointer;box-shadow:0 0 0 3px rgba(255,255,255,.25)}
     .jepret:active{transform:scale(.92)}
+
+    /* Layar promosi */
+    #promo{position:fixed;inset:0;z-index:150;background:#000;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .35s}
+    #promo.tampil{opacity:1}
+    #promo img,#promo video{max-width:100vw;max-height:100vh;width:100%;height:100%;object-fit:contain;display:block;background:#000}
+    #promo .pr-atas{position:fixed;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;align-items:center;gap:8px;pointer-events:none}
+    #promo .pr-label{background:rgba(0,0,0,.55);color:#fff;font-size:12px;font-weight:700;padding:5px 10px;border-radius:20px}
+    #promo .pr-tombol{pointer-events:auto;border:0;border-radius:20px;background:rgba(255,255,255,.2);color:#fff;font-size:13px;font-weight:700;padding:7px 12px;cursor:pointer}
+    #promo .pr-bawah{position:fixed;bottom:16px;left:0;right:0;text-align:center;color:rgba(255,255,255,.75);font-size:12px;pointer-events:none}
+    #promo .pr-hitung{position:fixed;bottom:16px;right:16px;width:46px;height:46px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font-weight:800;font-size:18px;display:flex;align-items:center;justify-content:center;border:2px solid #F5A524}
+    .promo-item{display:flex;align-items:center;gap:10px;padding:8px;border:1px solid var(--garis);border-radius:10px;margin-bottom:8px;background:#fff}
+    .promo-item .ikon{width:64px;height:48px;border-radius:7px;background:#0F2A4A;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;flex:0 0 64px;overflow:hidden}
+    .promo-item .ikon img{width:100%;height:100%;object-fit:cover}
+    .promo-item .info{flex:1;min-width:0;font-size:12px}
+    .promo-item .info b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+    /* Kalender kegiatan hari kerja */
+    .kal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+    .kal .hd{font-size:11px;font-weight:700;color:var(--abu);text-align:center;padding:2px 0}
+    .kal .d{position:relative;height:46px;border-radius:9px;border:1px solid var(--garis);background:#fff;font-weight:800;font-size:14px;color:var(--teks);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:0;cursor:default;font-family:inherit}
+    .kal .d small{font-size:10px;font-weight:700;line-height:1}
+    .kal .d.ada{background:#dcfce7;border-color:#86efac;color:#14532d}
+    .kal .d.kosong{background:#fee2e2;border-color:#f87171;color:#991b1b;cursor:pointer}
+    .kal .d.hariini{background:#fef3c7;border-color:#f59e0b;color:#92400e;cursor:pointer}
+    .kal .d.libur,.kal .d.akhirpekan{background:#f1f5f9;color:#94a3b8;border-color:#e2e8f0}
+    .kal .d.libur small{color:#b91c1c}
+    .kal .d.nanti,.kal .d.sebelum{background:#fff;color:#cbd5e1}
+    .kal .d.pilih{outline:3px solid #0b4f6c;outline-offset:1px}
+    .kal .d.klik{cursor:pointer}
+    .kal-leg{display:flex;flex-wrap:wrap;gap:10px;font-size:11px;color:var(--abu);margin-top:8px}
+    .kal-leg i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:4px;border:1px solid #cbd5e1}
+    .kal-ringkas{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+    .libur-row{display:grid;grid-template-columns:150px 1fr 36px;gap:8px;margin-bottom:6px}
+    @media (max-width:520px){ .kal .d{height:40px;font-size:13px} .libur-row{grid-template-columns:1fr 36px} .libur-row input[type=date]{grid-column:1 / -1} }
+
+    /* Filter tanggal admin */
+    .filter-tgl{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 10px;padding:10px 12px;border:1px solid #d5ece7;border-radius:10px;background:#f6fbfa}
+    .filter-tgl label{margin:0;font-size:13px}
+    .filter-tgl select{width:auto;min-width:150px;flex:1 1 170px;padding:8px 10px}
+    @media (max-width:520px){ .header{padding-top:48px} }
+    .kal .d.netral{background:#fff;color:#334155}
+    .kal-filter{display:grid;grid-template-columns:minmax(0,520px) minmax(0,1fr);gap:16px;align-items:start}
+    .kal-filter .kal-info{display:flex;flex-direction:column;gap:8px;font-size:13px}
+    .kal-filter .kal-info .pilihan{font-size:15px;font-weight:800;color:var(--biru)}
+    .kal-filter .kal-info .tombol-kal{display:flex;flex-wrap:wrap;gap:6px}
+    @media (max-width:760px){ .kal-filter{grid-template-columns:1fr} }
+    .det-kal{max-width:560px}
+    .det-tgl{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 8px}
+    .det-tgl input{width:auto;padding:7px 10px}
+
+    /* Upload banyak foto */
+    .aksi .lebar{grid-column:1 / -1}
+    .b-daftar{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:10px 0 12px}
+    .b-item{border:2px solid var(--garis);border-radius:11px;padding:6px;position:relative;background:#fff;display:flex;flex-direction:column;gap:4px}
+    .b-item.tolak{border-color:#f87171;background:#fff5f5}
+    .b-item.mirip{border-color:#f59e0b;background:#fffbeb}
+    .b-item img{width:100%;height:112px;object-fit:cover;border-radius:7px;background:#f1f5f9;display:block}
+    .b-item input{padding:6px 7px;font-size:12px;border-radius:7px}
+    .b-item .b-no{position:absolute;top:10px;left:10px;background:#0F2A4A;color:#fff;font-size:11px;font-weight:800;border-radius:20px;padding:1px 7px}
+    .b-item .b-hapus{position:absolute;top:8px;right:8px;width:28px;height:28px;border:0;border-radius:50%;background:rgba(15,23,42,.75);color:#fff;font-size:15px;cursor:pointer}
+    .b-st{font-size:11px;font-weight:600;line-height:1.3;color:var(--abu)}
+    .b-st.ok{color:var(--hijau)} .b-st.err{color:var(--merah)} .b-st.warn{color:#92400e}
+    .b-row{display:grid;grid-template-columns:minmax(0,1fr);gap:4px}
+    .b-item input{min-width:0;width:100%}
+    .b-ringkas{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px;font-weight:600;margin-top:6px}
 
     /* Lihat foto layar penuh */
     #layarPenuh{position:fixed;inset:0;background:#000;z-index:120;display:flex;align-items:center;justify-content:center;touch-action:pinch-zoom}
@@ -388,7 +453,7 @@
     <div id="pUltah"></div>
     <div class="card">
       <div class="header">
-        <div class="kanan-atas"><button class="btn-keluar btn-install hidden" type="button" onclick="pasangAplikasi()">📲 Install</button><button class="btn-keluar" type="button" onclick="logout()">Log-out</button></div>
+        <div class="kanan-atas"><button class="btn-keluar btn-install hidden" type="button" onclick="pasangAplikasi()">📲 Install</button></div>
         <div class="logo-slot"></div>
         <h1>LAPORAN RHK 2026</h1>
         <div class="sapa" id="pSapa"></div>
@@ -403,9 +468,15 @@
         <div class="ringkas" id="pRingkas"></div>
         <div class="aksi">
           <button class="btn" onclick="bukaForm()">＋ Tambah Laporan</button>
-          <button class="btn hijau" onclick="cetak()">🖨️ Cetak Semua</button>
+          <button class="btn" id="btnBanyak" onclick="bukaBanyak()">📚 Upload RHK 9</button>
+          <button class="btn hijau lebar" onclick="cetak()">🖨️ Cetak Semua</button>
         </div>
       </div>
+    </div>
+
+    <div class="card pad">
+      <h2>📅 Kalender Kegiatan Hari Kerja</h2>
+      <div id="pKalender"></div>
     </div>
 
     <div class="card pad">
@@ -423,7 +494,7 @@
   <div id="vAdmin" class="hidden">
     <div class="card">
       <div class="header">
-        <div class="kanan-atas"><button class="btn-keluar btn-install hidden" type="button" onclick="pasangAplikasi()">📲 Install</button><button class="btn-keluar" type="button" onclick="logout()">Log-out</button></div>
+        <div class="kanan-atas"><button class="btn-keluar btn-install hidden" type="button" onclick="pasangAplikasi()">📲 Install</button></div>
         <h1>ADMIN · LAPORAN RHK 2026</h1>
         <div class="sapa" id="aSapa"></div>
       </div>
@@ -457,6 +528,17 @@
           <input id="dCari" placeholder="🔎 Cari uraian / tempat / nama…">
           <label style="display:flex;align-items:center;gap:8px;margin:0;font-weight:600;border:1px solid #cbd5e1;border-radius:9px;padding:0 12px;background:#fff"><input type="checkbox" id="dGanda" style="width:auto"> ⚠️ Hanya foto ganda</label>
         </div>
+        <div class="filter-tgl kal-filter">
+          <div id="dKal"></div>
+          <div class="kal-info">
+            <div class="pilihan" id="dKalPilih">📅 Semua tanggal</div>
+            <div class="catatan" style="margin:0">Klik tanggal di kalender untuk melihat kegiatan hari itu. Klik lagi tanggal yang sama untuk kembali ke semua tanggal. Angka kecil = jumlah kegiatan.</div>
+            <div class="tombol-kal">
+              <button type="button" class="btn putih kecil" onclick="filterHariIni()">Hari ini</button>
+              <button type="button" class="btn putih kecil" onclick="pilihTglData('')">Semua tanggal</button>
+            </div>
+          </div>
+        </div>
         <div class="catatan" id="dJumlah" style="margin:0 0 6px"></div>
         <div class="tdata-wrap"><table class="tdata" id="dTabel"></table></div>
         <div class="catatan" style="margin-top:6px">🔗 <b>Buka</b> membuka foto di Google Drive · 📋 <b>Salin</b> menyalin link foto, bisa ditempel di WhatsApp atau browser lain.</div>
@@ -482,9 +564,30 @@
       </div>
 
       <div class="pad hidden" id="tab-atur">
-        <h2>Ganti Token Admin</h2>
+        <h2>📣 Promosi</h2>
+        <div class="catatan" style="margin-bottom:8px">Gambar atau video (bersuara) yang tampil saat aplikasi <b>2 menit tidak disentuh</b> dan <b>5 detik saat Log-out</b>. Maks. 5 promosi; bila lebih dari satu, ditampilkan bergantian.</div>
+        <label style="display:flex;align-items:center;gap:8px;margin-bottom:10px;font-weight:600"><input type="checkbox" id="prAktif" style="width:auto"> Tampilkan promosi</label>
+        <div id="prDaftar"></div>
+        <div class="aksi" style="margin-top:6px">
+          <button class="btn putih" type="button" onclick="document.getElementById('prFile').click()">＋ Unggah gambar / video</button>
+          <button class="btn putih" type="button" onclick="cobaPromo()">▶️ Coba tampilkan</button>
+        </div>
+        <input type="file" id="prFile" accept="image/*,video/mp4,video/webm,video/*" class="hidden">
+        <div class="catatan" style="margin-top:6px">Gambar maks. 5 MB. Video MP4 maks. 20 MB (saran 720p, 15–60 detik). Foto otomatis diperkecil.</div>
+
+        <h2 style="margin-top:20px">Ganti Token Admin</h2>
         <div class="fg"><input id="admTokenBaru" placeholder="Token admin baru (min. 8 karakter)" style="text-transform:uppercase;font-family:Consolas,monospace"></div>
         <button class="btn full" onclick="gantiTokenAdmin()">Simpan Token Admin</button>
+        <h2 style="margin-top:20px">Hari Kerja &amp; Tanggal Merah</h2>
+        <div class="catatan" style="margin-bottom:8px">Dipakai Kalender Kegiatan untuk menandai hari kerja yang belum ada kegiatan. Tanggal merah &amp; cuti bersama tidak dihitung.</div>
+        <div class="fg"><label for="kHariKerja">Hari kerja</label>
+          <select id="kHariKerja"><option value="5">Senin – Jumat</option><option value="6">Senin – Sabtu</option></select></div>
+        <label>Tanggal merah / cuti bersama</label>
+        <div id="kLibur"></div>
+        <div class="aksi" style="margin-top:6px">
+          <button class="btn putih" type="button" onclick="tambahLibur()">＋ Tambah tanggal</button>
+          <button class="btn" type="button" onclick="simpanKalender()">Simpan</button>
+        </div>
         <h2 style="margin-top:20px">Link Foto</h2>
         <div class="catatan" style="margin-bottom:8px">Foto baru otomatis bisa dibuka lewat link. Klik tombol ini sekali untuk mengaktifkan link pada foto-foto yang diunggah sebelum fitur ini ada.</div>
         <button class="btn putih full" onclick="bagikanFotoLama()">🔗 Aktifkan link foto lama</button>
@@ -499,13 +602,19 @@
       </div>
     </div>
   </div>
-  <div class="kaki">© 2026 <b>Varhamxiank.com</b></div>
+  <div class="kaki">© 2026 <b>Varhamxiank.com</b>
+    <div id="kakiKeluar" class="hidden" style="margin-top:12px"><button class="btn putih" type="button" onclick="logout()" style="min-width:160px">⎋ Log-out</button></div>
+  </div>
 </div>
 
 <!-- ================= MODAL FORM LAPORAN ================= -->
 <div class="modal hidden" id="modalForm">
   <div class="modal-box">
     <div class="modal-head"><h3 id="modalFormJudul">Tambah Laporan</h3><button class="x" onclick="batalForm()">×</button></div>
+    <div class="alert hijau" id="petunjukBanyak" style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 12px">
+      <span style="font-size:12px" id="petunjukBanyakTeks">Laporan RHK 9 Medsos? Upload banyak foto sekaligus, 1 foto = 1 laporan.</span>
+      <button type="button" class="btn kecil" onclick="batalForm(); bukaBanyak()">📚 Upload Banyak</button>
+    </div>
     <div id="formAlert" class="alert merah hidden"></div>
     <form id="formLap">
       <div class="fg"><label>RHK *</label><select id="fRhk" required></select></div>
@@ -540,6 +649,27 @@
       <div class="catatan" style="margin-bottom:12px">📷 <b>Kamera</b>: langsung memotret, foto diberi cap logo Kemensos, nama, lokasi, titik koordinat, hari-tanggal &amp; jam. 🖼️ <b>Galeri</b>: foto dikirim apa adanya tanpa cap. Foto langsung diunggah begitu dipilih supaya tombol kirim lebih cepat.</div>
       <button class="btn full" id="btnKirim" type="submit">KIRIM LAPORAN</button>
     </form>
+  </div>
+</div>
+
+<!-- ================= MODAL UPLOAD BANYAK ================= -->
+<div class="modal hidden" id="modalBanyak">
+  <div class="modal-box">
+    <div class="modal-head"><h3>📚 Upload Banyak Foto RHK 9</h3><button class="x" type="button" onclick="tutupBanyak()">×</button></div>
+    <div class="catatan" style="margin:-4px 0 10px">Khusus <b>RHK 9 Medsos</b>. Setiap foto otomatis menjadi <b>1 laporan</b> dan masuk ke kolom dokumentasi. Jumlah slot foto mengikuti <b>sisa target bulan ini</b>.</div>
+    <div id="bAlert" class="alert merah hidden"></div>
+    <div class="fg"><label for="bRhk">RHK *</label><select id="bRhk"></select><div class="catatan" id="bTarget"></div></div>
+    <div class="fg"><label for="bUraian">URAIAN KEGIATAN * <span style="font-weight:400">(sama untuk semua foto)</span></label>
+      <textarea id="bUraian" maxlength="1500" placeholder="Contoh: Publikasi kegiatan PKH di Facebook/Instagram/WhatsApp"></textarea></div>
+    <div class="fg"><label for="bTempat">TEMPAT KEGIATAN *</label><input id="bTempat" maxlength="200" placeholder="Contoh: Media Sosial"></div>
+    <div class="fg"><label>FOTO / DOKUMENTASI *</label>
+      <button class="btn putih full" id="bPilih" type="button" onclick="document.getElementById('bFile').click()">🖼️ Pilih Banyak Foto dari Galeri</button>
+      <input type="file" id="bFile" accept="image/*" multiple class="hidden">
+      <div class="catatan">Tekan lama satu foto di galeri lalu centang foto lainnya. Tanggal &amp; jam tiap laporan diambil dari foto dan bisa diubah. Keterangan per foto boleh dikosongkan.</div>
+    </div>
+    <div class="b-ringkas" id="bRingkas"></div>
+    <div class="b-daftar" id="bDaftar"></div>
+    <button class="btn full" id="bKirim" type="button" onclick="kirimBanyak()">KIRIM LAPORAN</button>
   </div>
 </div>
 
@@ -633,6 +763,15 @@
   <img id="layarPenuhImg" alt="Foto">
   <button class="tutup" type="button" aria-label="Tutup">×</button>
   <div class="petunjuk">Cubit untuk memperbesar · ketuk untuk menutup</div>
+</div>
+
+<!-- ================= LAYAR PROMOSI ================= -->
+<div id="promo" class="hidden" role="dialog" aria-label="Promosi">
+  <div id="prMedia" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center"></div>
+  <div class="pr-atas"><span class="pr-label">📣 Promosi</span>
+    <span style="display:flex;gap:6px"><button type="button" class="pr-tombol hidden" id="prSuara">🔊 Aktifkan suara</button><button type="button" class="pr-tombol" id="prTutup">Tutup ✕</button></span></div>
+  <div class="pr-bawah" id="prPetunjuk">Ketuk layar untuk kembali ke aplikasi</div>
+  <div class="pr-hitung hidden" id="prHitung">5</div>
 </div>
 
 <div id="loader" class="hidden"><div class="spinner"></div><div id="loaderTeks">Memuat…</div></div>
@@ -766,6 +905,7 @@
       simpanToken(t, ingat);
       tutup('vLogin');
       document.body.dataset.mode = r.role;
+      buka('kakiKeluar');
       if (r.role === 'admin'){ buka('vAdmin'); $('aSapa').textContent = sapaan()+', Admin 👋'; S.abulan = bulanSekarang(); $('aBulan').value=S.abulan; $('pegLahir').max = hariIniStr(); await muatAdmin(); mulaiAutoAdmin(); }
       else { buka('vPegawai'); S.bulan = bulanSekarang(); $('pBulan').value=S.bulan; await muatDashboard(); }
     }catch(err){
@@ -773,12 +913,16 @@
     }finally{ loader(false); }
   }
 
-  function logout(pesan){
+  async function logout(pesan){
+    // Log-out biasa (bukan sesi habis): tampilkan promosi 5 detik lebih dulu
+    if (!pesan && S.role && promoSiap()){ await tampilPromo('logout'); }
     simpanToken('', false);
+    tutup('kakiKeluar');
     Object.assign(S, { token:'', role:'', nama:'', dash:null, adm:null, foto:{}, pilih:null, editId:null });
     document.body.dataset.mode = 'login';
     clearInterval(timerAdmin); tutupKamera();
-    ['vPegawai','vAdmin','modalForm','modalFoto','modalMember'].forEach(tutup);
+    ['vPegawai','vAdmin','modalForm','modalFoto','modalMember','modalBanyak'].forEach(tutup);
+    if (S.banyak) S.banyak.items = [];
     buka('vLogin'); tampilAkhirLogin(); tutupPesta(); $('inToken').value='';
     if (pesan){ $('loginAlert').textContent=pesan; $('loginAlert').classList.remove('hidden'); }
     loader(false);
@@ -811,6 +955,7 @@
     }
     $('pBulanTeks').textContent = fmtBulan(d.bulan);
     $('pNip').textContent = d.nip ? 'NIP. ' + d.nip : '';
+    aturTombolBanyak();
 
     const bertarget = d.rekap.filter(r => r.target > 0);
     const kurang = bertarget.filter(r => r.jumlah < r.target);
@@ -834,6 +979,11 @@
           ? '<div class="alert merah"><b>Bulan ini ditutup dengan '+kurang.length+' RHK belum tercapai</b>'+listKurang+'</div>'
           : '<div class="alert hijau"><b>✅ Semua target bulan ini tercapai.</b></div>';
       }
+    }
+    const infoKal = renderKalenderMember();
+    if (infoKal && infoKal.kosong.length){
+      html = '<div class="alert merah"><b>📅 '+infoKal.kosong.length+' hari kerja belum ada kegiatan</b>'+
+        esc(daftarKosongTeks(infoKal.kosong, 8))+' '+esc(BLN[+d.bulan.slice(5)-1])+'. Ketuk tanggal merah di Kalender Kegiatan untuk melengkapi.</div>' + html;
     }
     $('pPeringatan').innerHTML = html;
 
@@ -864,6 +1014,66 @@
         '</tbody></table>'
       : '<div class="kosong">Belum ada laporan di '+esc(fmtBulan(d.bulan))+'.</div>';
   }
+
+  // ---------- KALENDER KEGIATAN HARI KERJA ----------
+  /**
+   * Status setiap hari di bulan: ada (sudah ada kegiatan), kosong (hari kerja lewat tanpa kegiatan),
+   * hariini (hari ini, belum ada kegiatan), libur, akhirpekan, nanti (belum tiba), sebelum (sebelum member terdaftar).
+   */
+  function statusKalender(bulan, hitung, kal, mulai, hariIni){
+    const [y, m] = bulan.split('-').map(Number), jml = new Date(y, m, 0).getDate();
+    const libur = {}; (kal && kal.libur || []).forEach(x => { libur[x.t] = x.ket || 'Libur'; });
+    const hk = kal && kal.hariKerja === 6 ? 6 : 5;
+    const hari = [];
+    for (let d = 1; d <= jml; d++){
+      const t = bulan+'-'+String(d).padStart(2,'0'), dow = new Date(y, m-1, d).getDay(), n = hitung[t] || 0;
+      const kerja = dow !== 0 && (hk === 6 || dow !== 6) && !libur[t];
+      let st;
+      if (n) st = 'ada';
+      else if (libur[t]) st = 'libur';
+      else if (!kerja) st = 'akhirpekan';
+      else if (t > hariIni) st = 'nanti';
+      else if (mulai && t < mulai) st = 'sebelum';
+      else st = t === hariIni ? 'hariini' : 'kosong';
+      hari.push({ t: t, d: d, dow: dow, n: n, st: st, kerja: kerja, ket: libur[t] || '' });
+    }
+    const hkSampai = hari.filter(h => h.kerja && h.t <= hariIni && !(mulai && h.t < mulai));
+    return { hari: hari, kosong: hari.filter(h => h.st === 'kosong'), hariKerja: hkSampai.length, terisi: hkSampai.filter(h => h.n).length };
+  }
+  /** HTML kalender. aksi(t, st) → nama fungsi klik (atau ''); pilih = tanggal disorot. */
+  function htmlKalender(info, aksi, pilih){
+    const awal = (info.hari[0].dow + 6) % 7;   // Senin di kolom pertama
+    let s = '<div class="kal">'+['Sen','Sel','Rab','Kam','Jum','Sab','Min'].map(x => '<div class="hd">'+x+'</div>').join('');
+    for (let i = 0; i < awal; i++) s += '<div></div>';
+    info.hari.forEach(h => {
+      const fn = aksi(h);
+      const label = h.st === 'ada' ? h.n+' kegiatan' : h.st === 'kosong' ? 'belum ada kegiatan' : h.st === 'hariini' ? 'hari ini, belum ada kegiatan' : h.st === 'libur' ? h.ket : '';
+      const sub = h.st === 'ada' ? '<small>'+h.n+'</small>' : h.st === 'libur' ? '<small>libur</small>' : h.st === 'kosong' ? '<small>!</small>' : '';
+      s += '<button type="button" class="d '+h.st+(fn ? ' klik' : '')+(pilih === h.t ? ' pilih' : '')+'"'+(fn ? ' onclick="'+fn+'"' : ' tabindex="-1"')+
+           ' title="'+esc(fmtTgl(h.t)+(label ? ' — '+label : ''))+'" aria-label="'+esc(fmtTgl(h.t)+(label ? ', '+label : ''))+'">'+h.d+sub+'</button>';
+    });
+    s += '</div><div class="kal-leg"><span><i style="background:#dcfce7"></i>Ada kegiatan</span><span><i style="background:#fee2e2"></i>Hari kerja kosong</span>'+
+         '<span><i style="background:#fef3c7"></i>Hari ini</span><span><i style="background:#f1f5f9"></i>Libur / akhir pekan</span></div>';
+    return s;
+  }
+  function hitungPerTanggal(laporan){
+    const h = {}; laporan.forEach(l => { h[l.tanggal] = (h[l.tanggal] || 0) + 1; }); return h;
+  }
+  function daftarKosongTeks(kosong, maks){
+    return kosong.slice(0, maks).map(h => HARI[h.dow].slice(0,3)+' '+h.d).join(', ') + (kosong.length > maks ? ', …' : '');
+  }
+
+  // member: kalender + peringatan hari kerja kosong
+  function renderKalenderMember(){
+    const d = S.dash; if (!d || !d.kalender) return;
+    const info = statusKalender(d.bulan, hitungPerTanggal(d.laporan), d.kalender, (d.mulai||'').slice(0,10), d.hariIni);
+    const ringkas = '<div class="kal-ringkas"><span class="st ok">✅ '+info.terisi+' dari '+info.hariKerja+' hari kerja terisi</span>'+
+      (info.kosong.length ? '<span class="st kurang">⛔ '+info.kosong.length+' hari kerja belum ada kegiatan</span>' : '<span class="st ok">Tidak ada hari kosong 👍</span>')+'</div>';
+    $('pKalender').innerHTML = ringkas + htmlKalender(info, h => (h.st === 'kosong' || h.st === 'hariini' || (h.st === 'ada' && h.t <= d.hariIni)) ? "isiTanggal('"+h.t+"')" : '', '') +
+      '<div class="catatan" style="margin-top:6px">Ketuk tanggal merah/kuning untuk langsung menambah laporan di tanggal itu.</div>';
+    return info;
+  }
+  function isiTanggal(t){ bukaForm(null, t); }
 
   /** Daftar rekap per RHK dengan bar kemajuan (dipakai member & admin). */
   function htmlRekap(rekap){
@@ -1004,7 +1214,7 @@
   }
 
   // ---------- form laporan ----------
-  function bukaForm(id){
+  function bukaForm(id, tanggalAwal){
     const d = S.dash;
     const l = id ? d.laporan.find(x => x.id === id) : null;
     buangUnggahan();
@@ -1015,6 +1225,7 @@
     S.gpsAwal = mintaLokasi();   // minta izin & panaskan GPS sejak form dibuka
     $('formAlert').classList.add('hidden');
     $('modalFormJudul').textContent = l ? '✏️ Edit Laporan' : 'Tambah Laporan';
+    $('petunjukBanyak').style.display = (!l && rhk9() && sisaRhk9()) ? 'flex' : 'none';
     $('btnKirim').textContent = l ? 'SIMPAN PERUBAHAN' : 'KIRIM LAPORAN';
     $('labelFoto1').textContent = l ? 'DOKUMENTASI FOTO 1' : 'DOKUMENTASI FOTO 1 *';
     const daftar = d.rhkList.slice();
@@ -1035,7 +1246,7 @@
         ambilFoto([fid]).then(src => { if (S.editId === l.id && !S.slot[n]) $('fPrev'+n).innerHTML = src[0] ? '<img src="'+src[0]+'">' : ''; }).catch(() => {});
       });
     } else {
-      $('fTanggal').value = d.hariIni;
+      $('fTanggal').value = tanggalAwal && tanggalAwal <= d.hariIni ? tanggalAwal : d.hariIni;
       const n = new Date(); $('fWaktu').value = String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
     }
     buka('modalForm');
@@ -1535,6 +1746,238 @@
     finally{ btn.disabled = false; loader(false); }
   });
 
+  // ---------- UPLOAD BANYAK FOTO (1 foto = 1 laporan) ----------
+  const MAKS_BANYAK = 40;
+  S.banyak = { items: [], aktif: 0, antrian: [], seq: 0 };
+  const p2 = v => String(v).padStart(2,'0');
+  const tglStr = d => d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());
+  const jamStr = d => p2(d.getHours())+':'+p2(d.getMinutes());
+
+  /** Nama RHK 9 (Medsos) di daftar target. */
+  function rhk9(){
+    const l = S.dash ? S.dash.rhkList : [];
+    return l.find(r => /^RHK\s*9\b/i.test(r)) || l.find(r => /MEDSOS/i.test(r)) || '';
+  }
+  /** Slot foto yang masih bisa diupload = sisa target RHK 9 bulan berjalan. */
+  function sisaRhk9(){
+    const d = S.dash, nama = rhk9(); if (!d || !nama || d.bulan !== d.bulanIni) return null;
+    const r = d.rekap.find(x => x.rhk === nama);
+    return r && r.target > 0 ? Math.max(0, r.target - r.jumlah) : MAKS_BANYAK;
+  }
+  function slotBanyak(){ return Math.min(MAKS_BANYAK, sisaRhk9() || 0); }
+  function aturTombolBanyak(){
+    const b = $('btnBanyak'); if (!b || !S.dash) return;
+    const nama = rhk9(), sisa = sisaRhk9();
+    b.classList.toggle('hidden', !nama);
+    b.disabled = sisa === 0;
+    b.textContent = sisa === null ? '📚 Upload RHK 9' : sisa === 0 ? '✅ Target RHK 9 tercapai' : '📚 Upload RHK 9 (sisa '+sisa+')';
+  }
+
+  async function bukaBanyak(){
+    if (!S.dash || !rhk9()) return;
+    if (S.dash.bulan !== S.dash.bulanIni){   // upload banyak selalu untuk bulan berjalan
+      S.bulan = S.dash.bulanIni; $('pBulan').value = S.bulan; await muatDashboard();
+    }
+    if (!sisaRhk9()) return toast('Target RHK 9 bulan ini sudah tercapai. Tambahan laporan bisa lewat ＋ Tambah Laporan.');
+    tutupBanyak(true);
+    $('bAlert').classList.add('hidden');
+    $('bUraian').value = ''; $('bTempat').value = 'Media Sosial';
+    const nama = rhk9();
+    $('bRhk').innerHTML = '<option value="'+esc(nama)+'">'+esc(nama)+'</option>';
+    $('bRhk').value = nama; $('bRhk').disabled = true;
+    infoTargetBanyak(); renderBanyak();
+    buka('modalBanyak');
+  }
+  function infoTargetBanyak(){
+    const r = S.dash && S.dash.rekap.find(x => x.rhk === rhk9());
+    $('bTarget').innerHTML = !r ? '' : r.target > 0
+      ? 'Target '+esc(fmtBulan(S.dash.bulanIni))+': <b>'+r.target+'</b> · sudah <b>'+r.jumlah+'</b> · <b style="color:var(--merah)">sisa '+Math.max(0, r.target-r.jumlah)+' foto</b>'
+      : 'RHK ini tanpa target (maksimal '+MAKS_BANYAK+' foto sekali kirim).';
+  }
+
+  function tutupBanyak(diam){
+    const ids = S.banyak.items.map(it => it.up && it.up.id).filter(Boolean);
+    S.banyak.items.forEach(it => { it.batal = true; });
+    for (let i = 0; i < ids.length; i += 4) api('hapusFotoSementara', S.token, ids.slice(i, i+4)).catch(() => {});
+    S.banyak.items = []; S.banyak.antrian = [];
+    if (!diam) tutup('modalBanyak');
+  }
+
+  $('bFile').addEventListener('change', async e => {
+    const files = [...e.target.files]; e.target.value = '';
+    if (!files.length) return;
+    const sisa = slotBanyak() - S.banyak.items.length;
+    if (files.length > sisa) toast('Slot foto tersisa '+Math.max(0, sisa)+' (sesuai sisa target RHK 9). '+(files.length - Math.max(0, sisa))+' foto tidak ditambahkan.', true);
+    const baru = files.slice(0, Math.max(0, sisa)).map(f => ({ key: 'b'+(++S.banyak.seq), file: f, st: 'proses', ket: '' }));
+    S.banyak.items.push(...baru);
+    renderBanyak();
+    // proses satu per satu: perkecil, sidik, tanggal dari foto, lalu antre unggah
+    for (const it of baru){
+      if (it.batal) continue;
+      try{
+        it.dataUrl = await prosesFoto(it.file, null);
+        it.sidik = await sidikFoto(it.dataUrl);
+        const ex = await bacaExif(it.file);
+        let d = ex.tanggal || new Date(it.file.lastModified || Date.now());
+        if (isNaN(d) || d > new Date()) d = new Date();
+        it.waktuAsli = d; it.tanggal = tglStr(d); it.waktu = jamStr(d);
+        // hanya bulan berjalan s.d. hari ini; foto dari bulan lain diberi tanggal hari ini (bisa diubah)
+        if (S.dash && (it.tanggal > S.dash.hariIni || it.tanggal.slice(0,7) !== S.dash.bulanIni)) it.tanggal = S.dash.hariIni;
+        // foto sama di dalam daftar ini?
+        const kembar = S.banyak.items.find(x => x !== it && x.sidik && !x.batal && jarakSidik(x.sidik, it.sidik) <= BATAS_SAMA);
+        if (kembar){ it.st = 'tolak'; it.pesan = 'Sama dengan foto no. '+(S.banyak.items.indexOf(kembar)+1); }
+        else { it.st = 'unggah'; S.banyak.antrian.push(it); jalankanAntrian(); }
+      }catch(err){ it.st = 'gagal'; it.pesan = pesanErr(err); }
+      renderItem(it);
+    }
+    // cek foto ganda terhadap laporan lama (sekali panggil untuk semua foto baru)
+    const dicek = baru.filter(it => it.sidik && it.st !== 'tolak' && !it.batal);
+    if (dicek.length){
+      try{
+        const hasil = await api('cekFotoGandaBanyak', S.token, dicek.map(it => it.sidik));
+        dicek.forEach((it, i) => {
+          const g = hasil[i]; if (!g || it.batal) return;
+          const info = labelRhk(g.rhk)+' · '+fmtTglPendek(g.tanggal);
+          if (g.sama){ it.st = 'tolak'; it.pesan = 'Sudah pernah dipakai ('+info+')'; buangUp(it); }
+          else { it.mirip = true; it.pesan = 'Sangat mirip foto '+info; }
+          renderItem(it);
+        });
+      }catch(e){}
+    }
+    renderRingkas();
+  });
+
+  function jalankanAntrian(){
+    while (S.banyak.aktif < 3 && S.banyak.antrian.length){
+      const it = S.banyak.antrian.shift();
+      if (it.batal || it.st === 'tolak') continue;
+      S.banyak.aktif++;
+      it.up = { promise: api('uploadFoto', S.token, it.dataUrl) };
+      it.up.promise
+        .then(r => { if (it.batal || it.st === 'tolak'){ api('hapusFotoSementara', S.token, [r.id]).catch(() => {}); return; } it.up.id = r.id; S.foto[r.id] = it.dataUrl; it.st = 'siap'; })
+        .catch(err => { it.st = 'gagal'; it.pesan = pesanErr(err); })
+        .finally(() => { S.banyak.aktif--; renderItem(it); renderRingkas(); jalankanAntrian(); });
+    }
+  }
+  function buangUp(it){
+    if (it.up && it.up.id){ api('hapusFotoSementara', S.token, [it.up.id]).catch(() => {}); it.up.id = null; }
+  }
+  function ulangUnggah(key){
+    const it = S.banyak.items.find(x => x.key === key); if (!it) return;
+    it.st = 'unggah'; it.pesan = ''; renderItem(it);
+    S.banyak.antrian.push(it); jalankanAntrian();
+  }
+  function hapusItem(key){
+    const i = S.banyak.items.findIndex(x => x.key === key); if (i < 0) return;
+    const it = S.banyak.items[i]; it.batal = true; buangUp(it);
+    S.banyak.items.splice(i, 1);
+    // foto yang tadinya "sama dengan foto no. x" bisa jadi tidak kembar lagi → periksa ulang
+    S.banyak.items.forEach(x => {
+      if (x.st === 'tolak' && /^Sama dengan foto/.test(x.pesan || '') &&
+          !S.banyak.items.some(y => y !== x && y.sidik && jarakSidik(y.sidik, x.sidik) <= BATAS_SAMA && S.banyak.items.indexOf(y) < S.banyak.items.indexOf(x))){
+        x.st = 'unggah'; x.pesan = ''; S.banyak.antrian.push(x);
+      }
+    });
+    jalankanAntrian(); renderBanyak();
+  }
+
+  function htmlStatus(it){
+    if (it.st === 'proses') return '<div class="b-st">⏳ Memproses foto…</div>';
+    if (it.st === 'tolak') return '<div class="b-st err">⛔ '+esc(it.pesan)+'</div>';
+    if (it.st === 'gagal') return '<div class="b-st err">❌ Gagal: '+esc(it.pesan||'')+' <button type="button" class="lnk" onclick="ulangUnggah(\''+it.key+'\')">↻ Ulangi</button></div>';
+    let s = it.st === 'siap' ? '<div class="b-st ok">✅ Siap dikirim</div>' : '<div class="b-st">⏳ Mengunggah…</div>';
+    if (it.mirip) s += '<div class="b-st warn">⚠️ '+esc(it.pesan)+'</div><label class="b-st warn" style="display:flex;gap:5px;align-items:flex-start;margin:0"><input type="checkbox" data-key="'+it.key+'" data-f="konfirm" style="width:auto;margin-top:1px"'+(it.konfirm?' checked':'')+'> Saya pastikan foto berbeda</label>';
+    return s;
+  }
+  function htmlItem(it, i){
+    return '<div class="b-item'+(it.st==='tolak'?' tolak':it.mirip?' mirip':'')+'" id="bi-'+it.key+'">'+
+      '<span class="b-no">'+(i+1)+'</span><button type="button" class="b-hapus" aria-label="Hapus foto" onclick="hapusItem(\''+it.key+'\')">×</button>'+
+      (it.dataUrl ? '<img src="'+it.dataUrl+'" alt="Foto '+(i+1)+'">' : '<img alt="">')+
+      '<div class="b-row"><input type="date" data-key="'+it.key+'" data-f="tanggal" value="'+(it.tanggal||'')+'" min="'+(S.dash ? S.dash.bulanIni+'-01' : '')+'" max="'+(S.dash ? S.dash.hariIni : '')+'" aria-label="Tanggal foto '+(i+1)+'">'+
+      '<input type="time" data-key="'+it.key+'" data-f="waktu" value="'+(it.waktu||'')+'" aria-label="Waktu foto '+(i+1)+'"></div>'+
+      '<input data-key="'+it.key+'" data-f="ket" maxlength="300" value="'+esc(it.ket||'')+'" placeholder="Keterangan (opsional)" aria-label="Keterangan foto '+(i+1)+'">'+
+      '<div id="bs-'+it.key+'">'+htmlStatus(it)+'</div></div>';
+  }
+  function renderItem(it){
+    const el = $('bi-'+it.key); if (!el) return;
+    const i = S.banyak.items.indexOf(it);
+    if (!el.querySelector('img').getAttribute('src') && it.dataUrl){ el.outerHTML = htmlItem(it, i); return; }
+    el.className = 'b-item'+(it.st==='tolak'?' tolak':it.mirip?' mirip':'');
+    const t = el.querySelector('[data-f="tanggal"]'), w = el.querySelector('[data-f="waktu"]');
+    if (t && !t.value && it.tanggal) t.value = it.tanggal;
+    if (w && !w.value && it.waktu) w.value = it.waktu;
+    $('bs-'+it.key).innerHTML = htmlStatus(it);
+  }
+  function renderBanyak(){
+    $('bDaftar').innerHTML = S.banyak.items.map(htmlItem).join('');
+    renderRingkas();
+  }
+  function renderRingkas(){
+    const its = S.banyak.items, n = its.length;
+    const tolak = its.filter(x => x.st === 'tolak').length, siap = its.filter(x => x.st === 'siap').length;
+    const kirim = n - tolak, slot = slotBanyak();
+    $('bPilih').disabled = n >= slot;
+    $('bPilih').textContent = n >= slot ? '✅ Slot foto penuh ('+n+'/'+slot+')' : '🖼️ Pilih Foto dari Galeri (slot '+n+'/'+slot+')';
+    $('bRingkas').innerHTML = n
+      ? '<span>📷 '+n+'/'+slot+' foto</span><span class="st ok">✅ '+siap+' siap</span>'+(tolak ? '<span class="st kurang">⛔ '+tolak+' ditolak</span>' : '')+
+        '<span style="color:var(--abu)">→ akan menjadi <b>'+kirim+'</b> laporan</span>'
+      : '<span class="catatan" style="margin:0">Belum ada foto dipilih.</span>';
+    $('bKirim').textContent = kirim > 0 ? 'KIRIM '+kirim+' LAPORAN' : 'KIRIM LAPORAN';
+  }
+  // isian per foto (tanggal, waktu, keterangan, konfirmasi) disimpan tanpa menggambar ulang daftar
+  $('bDaftar').addEventListener('input', e => {
+    const k = e.target.dataset && e.target.dataset.key, f = e.target.dataset && e.target.dataset.f;
+    const it = k && S.banyak.items.find(x => x.key === k); if (!it) return;
+    it[f] = f === 'konfirm' ? e.target.checked : e.target.value;
+  });
+  $('bDaftar').addEventListener('change', e => {
+    const k = e.target.dataset && e.target.dataset.key, f = e.target.dataset && e.target.dataset.f;
+    const it = k && S.banyak.items.find(x => x.key === k); if (!it) return;
+    it[f] = f === 'konfirm' ? e.target.checked : e.target.value;
+  });
+
+  async function kirimBanyak(){
+    const al = $('bAlert'); al.classList.add('hidden');
+    const salah = m => { al.textContent = m; al.classList.remove('hidden'); al.scrollIntoView({ behavior:'smooth' }); };
+    const its = S.banyak.items;
+    if (!$('bRhk').value) return salah('Pilih RHK terlebih dahulu.');
+    if ($('bUraian').value.trim().length < 5) return salah('Uraian kegiatan terlalu singkat.');
+    if (!$('bTempat').value.trim()) return salah('Tempat kegiatan wajib diisi.');
+    if (!its.length) return salah('Pilih minimal 1 foto.');
+    if (its.length > slotBanyak()) return salah('Sisa target RHK 9 tinggal '+slotBanyak()+' foto. Hapus '+(its.length - slotBanyak())+' foto dari daftar.');
+    if (its.some(x => x.st === 'tolak')) return salah('Hapus dulu foto bertanda ⛔ (foto ganda) dari daftar.');
+    if (its.some(x => x.st === 'proses')) return salah('Tunggu sebentar, foto masih diproses.');
+    const hari = S.dash.hariIni;
+    for (let i = 0; i < its.length; i++){
+      const x = its[i];
+      if (!x.tanggal || x.tanggal > hari || x.tanggal.slice(0,7) !== S.dash.bulanIni) return salah('Foto '+(i+1)+': tanggal harus di bulan ini dan tidak melewati hari ini.');
+      if (!/^\d{2}:\d{2}$/.test(x.waktu || '')) return salah('Foto '+(i+1)+': waktu belum diisi.');
+      if (x.mirip && !x.konfirm) return salah('Foto '+(i+1)+' sangat mirip foto lain. Centang konfirmasi atau hapus foto itu.');
+    }
+    const btn = $('bKirim'); btn.disabled = true;
+    try{
+      // tunggu unggahan yang belum selesai
+      let belum = its.filter(x => !(x.up && x.up.id));
+      while (belum.length){
+        if (belum.some(x => x.st === 'gagal')) throw new Error('Ada foto yang gagal terunggah. Ketuk ↻ Ulangi pada foto itu.');
+        loader(true, 'Menyelesaikan unggah foto… '+(its.length - belum.length)+'/'+its.length);
+        await Promise.race(belum.filter(x => x.up && x.up.promise).map(x => x.up.promise.catch(() => {})).concat([tunggu(700)]));
+        belum = its.filter(x => !(x.up && x.up.id));
+      }
+      loader(true, 'Menyimpan '+its.length+' laporan…');
+      const r = await api('simpanLaporanBanyak', S.token,
+        { rhk: $('bRhk').value, uraian: $('bUraian').value.trim(), tempat: $('bTempat').value.trim() },
+        its.map(x => ({ fotoId: x.up.id, sidik: x.sidik || '', tanggal: x.tanggal, waktu: x.waktu, ket: (x.ket||'').trim(),
+                        konfirmasiMirip: !!(x.mirip && x.konfirm),
+                        sumber: 'Upload banyak (tgl foto '+(x.waktuAsli ? tglStr(x.waktuAsli)+' '+jamStr(x.waktuAsli) : '-')+')' })));
+      S.banyak.items = [];   // foto sudah resmi dipakai, jangan dibuang
+      tutup('modalBanyak');
+      toast('✅ '+r.jumlah+' laporan berhasil dikirim');
+      await muatDashboard();
+    }catch(err){ salah(pesanErr(err)); }
+    finally{ btn.disabled = false; loader(false); }
+  }
+
   // ---------- cetak ----------
   function cetak(){
     const d = S.dash;
@@ -1604,8 +2047,40 @@
     $('aBarBulan').classList.toggle('hidden', !['rekap','data'].includes(b.dataset.tab));
     if (b.dataset.tab === 'atur') muatInfoAdmin();
   }));
-  $('aBulan').addEventListener('change', () => { if($('aBulan').value){ S.abulan = $('aBulan').value; S.pilih = null; muatAdmin(); } });
+  $('aBulan').addEventListener('change', () => {
+    if (!$('aBulan').value) return;
+    S.abulan = $('aBulan').value; S.pilih = null; S.detTgl = '';
+    S.dTgl = '';
+    muatAdmin();
+  });
   ['dMember','dRhk','dGanda'].forEach(i => $(i).addEventListener('change', renderData));
+  // filter tanggal: klik tanggal di kalender bulan yang dipilih
+  function renderKalData(list){
+    const a = S.adm; if (!a) return;
+    const mem = $('dMember').value, peg = mem ? a.pegawai.find(p => p.id === mem) : null;
+    const info = statusKalender(a.bulan, hitungPerTanggal(list), a.kalender, peg ? (peg.dibuat||'').slice(0,10) : '', a.hariIni);
+    // tanpa member terpilih, hari tanpa kegiatan tidak diwarnai merah
+    if (!peg) info.hari.forEach(hh => { if (hh.st === 'kosong' || hh.st === 'hariini') hh.st = 'netral'; });
+    $('dKal').innerHTML = htmlKalender(info, hh => hh.t <= a.hariIni ? "pilihTglData('"+hh.t+"')" : '', S.dTgl);
+    $('dKalPilih').textContent = S.dTgl ? '📅 '+fmtTgl(S.dTgl) : '📅 Semua tanggal · '+fmtBulan(a.bulan);
+  }
+  function pilihTglData(t){ S.dTgl = (t && S.dTgl !== t) ? t : ''; renderData(); }
+  function filterHariIni(){
+    const t = hariIniStr();
+    if (t.slice(0,7) !== S.abulan){
+      S.abulan = t.slice(0,7); $('aBulan').value = S.abulan; S.pilih = null; S.dTgl = t; muatAdmin(); return;
+    }
+    S.dTgl = t; renderData();
+  }
+  /** Cocokkan tanggal laporan dengan filter: satu hari (hanya "dari") atau rentang. */
+  function cocokTanggal(tgl, dari, sampai){
+    if (!dari) return true;
+    return sampai ? (tgl >= dari && tgl <= sampai) : tgl === dari;
+  }
+  function teksTanggal(dari, sampai){
+    if (!dari) return '';
+    return sampai ? fmtTglPendek(dari)+' s/d '+fmtTglPendek(sampai) : fmtTgl(dari);
+  }
   $('dCari').addEventListener('input', renderData);
   $('tgtDaftar').addEventListener('input', () => { S.targetDiubah = true; });
 
@@ -1642,7 +2117,7 @@
       return '<span class="st kurang">⚠️ '+(l.ganda.some(g => g.sama) ? 'Foto sama' : 'Sangat mirip')+'</span>'+
         Object.values(unik).slice(0, 3).map(g => '<div class="kecil" style="white-space:nowrap">Foto '+g.n+' ≈ '+(g.id === l.id ? 'foto '+g.nLain+' laporan ini' : esc(labelRhk(g.rhk))+' · '+esc(fmtTglPendek(g.tanggal)))+'</div>').join('');
     }
-    return l.adaSidik ? '<span class="st ok">✅ Aman</span>' : '<span class="st info">Belum dicek</span>';
+    return l.adaSidik ? '<span class="st ok">✅ Aman</span>' : '<span class="st info" title="Dicek otomatis paling lama 15 menit">⏳ Menunggu dicek</span>';
   }
   function nipDari(pid){ const p = S.adm.pegawai.find(x => x.id === pid); return p && p.nip ? p.nip : ''; }
 
@@ -1668,9 +2143,18 @@
     return t + '</tbody></table>';
   }
 
+  function kosongMember(pid){
+    const a = S.adm, peg = a.pegawai.find(x => x.id === pid) || {};
+    return statusKalender(a.bulan, hitungPerTanggal(a.laporan.filter(l => l.pid === pid)), a.kalender, (peg.dibuat||'').slice(0,10), a.hariIni);
+  }
   function renderAdmin(){
     const a = S.adm;
     $('aWaktuMuat').textContent = 'Diperbarui '+a.diperbarui+' · otomatis tiap 1 menit';
+    if (a.promo && !P.adminDimuat){ P.adminDimuat = true; renderPromoAdmin(a.promo); }
+    if (!S.kalDiubah && a.pengaturanKalender){
+      $('kHariKerja').value = String(a.pengaturanKalender.hariKerja);
+      $('kLibur').innerHTML = ''; a.pengaturanKalender.libur.forEach(x => tambahLibur(x.t, x.ket));
+    }
     $('infoSidik').textContent = a.tanpaSidik ? a.tanpaSidik+' laporan lama belum diperiksa.' : '✅ Semua foto sudah punya sidik.';
     // Ulang tahun
     $('aUltah').innerHTML = a.ultah.length
@@ -1683,12 +2167,14 @@
     // Rekap
     const aktif = a.rekap.filter(r => r.aktif);
     const lengkap = aktif.filter(r => r.kurang === 0).length;
+    const adaKosong = aktif.filter(p => kosongMember(p.id).kosong.length).length;
     $('aRingkas').innerHTML =
       '<div><b>'+aktif.length+'</b><span>Member aktif</span></div>'+
       '<div><b style="color:var(--hijau)">'+lengkap+'</b><span>Target lengkap</span></div>'+
-      '<div><b style="color:var(--merah)">'+(aktif.length-lengkap)+'</b><span>Masih kurang</span></div>';
+      '<div><b style="color:var(--merah)">'+(aktif.length-lengkap)+'</b><span>Masih kurang</span></div>'+
+      '<div><b style="color:var(--merah)">'+adaKosong+'</b><span>Ada hari kerja kosong</span></div>';
     const rhk = a.target;
-    let t = '<tr><th>Nama</th>'+rhk.map(r => '<th title="'+esc(r.rhk)+'">'+esc(labelRhk(r.rhk))+'<br><small>tgt '+r.target+'</small></th>').join('')+'<th>Total</th><th>Status</th></tr>';
+    let t = '<tr><th>Nama</th>'+rhk.map(r => '<th title="'+esc(r.rhk)+'">'+esc(labelRhk(r.rhk))+'<br><small>tgt '+r.target+'</small></th>').join('')+'<th>Total</th><th>Hari kerja kosong</th><th>Status</th></tr>';
     aktif.forEach(p => {
       t += '<tr class="klik'+(S.pilih === p.id ? ' dipilih' : '')+'" onclick="pilihMember(\''+p.id+'\')"><td>▸ <b>'+esc(p.nama)+'</b></td>';
       rhk.forEach(r => {
@@ -1696,10 +2182,11 @@
         const kls = x.target <= 0 ? '' : x.jumlah >= x.target ? 'c-ok' : 'c-kurang';
         t += '<td class="'+kls+'">'+x.jumlah+'</td>';
       });
-      t += '<td><b>'+p.total+'</b></td><td>'+(p.kurang ? '<span class="st kurang">Kurang '+p.kurang+' RHK</span>' : '<span class="st ok">Lengkap</span>')+
+      const kk = kosongMember(p.id);
+      t += '<td><b>'+p.total+'</b></td><td>'+(kk.kosong.length ? '<span class="st kurang" title="'+esc(daftarKosongTeks(kk.kosong, 31))+'">'+kk.kosong.length+' hari</span>' : '<span class="st ok">0</span>')+'</td><td>'+(p.kurang ? '<span class="st kurang">Kurang '+p.kurang+' RHK</span>' : '<span class="st ok">Lengkap</span>')+
            (p.fotoGanda ? '<br><span class="st kurang" style="margin-top:3px;background:#fef3c7;color:#92400e">⚠️ '+p.fotoGanda+' laporan foto ganda</span>' : '')+'</td></tr>';
     });
-    if (!aktif.length) t += '<tr><td colspan="'+(rhk.length+3)+'" style="text-align:center">Belum ada member. Tambahkan di tab Member.</td></tr>';
+    if (!aktif.length) t += '<tr><td colspan="'+(rhk.length+4)+'" style="text-align:center">Belum ada member. Tambahkan di tab Member.</td></tr>';
     $('aTabel').innerHTML = t;
     $('aLegend').innerHTML = rhk.map(r => '<b>'+esc(labelRhk(r.rhk))+'</b> = '+esc(r.rhk)).join(' · ') + '<br>Angka merah = belum mencapai target, hijau = tercapai.';
     renderDetail();
@@ -1709,6 +2196,7 @@
     $('dMember').innerHTML = '<option value="">👥 Semua member</option>'+a.pegawai.map(p => '<option value="'+esc(p.id)+'">'+esc(p.nama)+'</option>').join('');
     $('dRhk').innerHTML = '<option value="">🎯 Semua RHK</option>'+rhk.map(r => '<option value="'+esc(r.rhk)+'">'+esc(r.rhk)+'</option>').join('');
     $('dMember').value = pm; $('dRhk').value = pr;
+    if (S.dTgl && S.dTgl.slice(0,7) !== a.bulan) S.dTgl = '';
     renderData();
 
     // Member
@@ -1733,6 +2221,7 @@
 
   function pilihMember(pid){
     S.pilih = (pid && S.pilih !== pid) ? pid : null;
+    S.detTgl = '';
     renderAdmin();
     if (S.pilih) setTimeout(() => $('aDetail').scrollIntoView({ behavior:'smooth', block:'start' }), 50);
   }
@@ -1740,20 +2229,55 @@
     const a = S.adm, box = $('aDetail');
     const p = S.pilih && a.rekap.find(x => x.id === S.pilih);
     if (!p){ box.innerHTML = ''; return; }
-    const lap = a.laporan.filter(l => l.pid === p.id);
+    const semuaLap = a.laporan.filter(l => l.pid === p.id);
+    const tgl = S.detTgl && S.detTgl.slice(0,7) === a.bulan ? S.detTgl : '';
+    const lap = semuaLap.filter(l => cocokTanggal(l.tanggal, tgl, ''));
     box.innerHTML = '<div class="detail"><div class="detail-head"><div><h3>📌 '+esc(p.nama)+'</h3>'+
-      '<small>NIP. '+esc(p.nip || '-')+' · '+esc(fmtBulan(a.bulan))+' · '+lap.length+' laporan</small></div>'+
+      '<small>NIP. '+esc(p.nip || '-')+' · '+esc(fmtBulan(a.bulan))+' · '+semuaLap.length+' laporan</small></div>'+
       '<button class="x" onclick="pilihMember(null)" title="Tutup">×</button></div>'+
       '<div class="detail-grid"><div><h2>Rekap Target</h2>'+htmlRekap(p.rekap)+'</div>'+
-      '<div><h2>Laporan</h2><div class="tdata-wrap">'+tabelLaporanAdmin(lap, false)+'</div></div></div></div>';
+      '<div><h2>Laporan'+(tgl ? ' — '+esc(fmtTgl(tgl)) : '')+'</h2>'+
+        '<div class="det-tgl"><span class="catatan" style="margin:0">📅 Klik tanggal hijau untuk melihat kegiatan hari itu · '+lap.length+' kegiatan</span>'+
+        (tgl ? '<button type="button" class="btn putih kecil" onclick="S.detTgl=\'\';renderDetail()">Semua tanggal</button>' : '')+'</div>'+
+        '<div class="det-kal" style="margin:4px 0 10px">'+(() => {
+          const kk = kosongMember(p.id);
+          return '<div class="kal-ringkas"><span class="st ok">✅ '+kk.terisi+' dari '+kk.hariKerja+' hari kerja terisi</span>'+
+            (kk.kosong.length ? '<span class="st kurang">⛔ '+kk.kosong.length+' hari kosong: '+esc(daftarKosongTeks(kk.kosong, 10))+'</span>' : '')+'</div>'+
+            htmlKalender(kk, hh => hh.st === 'ada' ? "S.detTgl=(S.detTgl==='"+hh.t+"'?'':'"+hh.t+"');renderDetail()" : '', tgl);
+        })()+'</div>'+
+        '<div class="tdata-wrap">'+tabelLaporanAdmin(lap, false)+'</div></div></div></div>';
   }
   function renderData(){
     const a = S.adm; if (!a) return;
     const m = $('dMember').value, r = $('dRhk').value, q = $('dCari').value.trim().toLowerCase(), hg = $('dGanda').checked;
-    const list = a.laporan.filter(l => (!m || l.pid === m) && (!r || l.rhk === r) && (!hg || (l.ganda && l.ganda.length)) &&
+    const dasar = a.laporan.filter(l => (!m || l.pid === m) && (!r || l.rhk === r) && (!hg || (l.ganda && l.ganda.length)) &&
       (!q || (l.uraian+' '+l.tempat+' '+l.nama+' '+(l.alamat||'')).toLowerCase().indexOf(q) > -1));
-    $('dJumlah').textContent = list.length+' laporan · '+fmtBulan(a.bulan);
+    renderKalData(dasar);
+    const list = dasar.filter(l => cocokTanggal(l.tanggal, S.dTgl, ''));
+    const nm = m ? (a.pegawai.find(p => p.id === m) || {}).nama : '';
+    $('dJumlah').textContent = list.length+' laporan · '+(S.dTgl ? fmtTgl(S.dTgl) : fmtBulan(a.bulan))+(nm ? ' · '+nm : '');
     $('dTabel').innerHTML = tabelLaporanAdmin(list, true);
+  }
+
+  // ---------- pengaturan hari kerja & tanggal merah ----------
+  function tambahLibur(t, ket){
+    const div = document.createElement('div'); div.className = 'libur-row';
+    div.innerHTML = '<input type="date" class="lTgl" value="'+esc(t||'')+'" aria-label="Tanggal libur">'+
+      '<input class="lKet" maxlength="60" placeholder="Keterangan, mis. Natal / Cuti bersama" value="'+esc(ket||'')+'" aria-label="Keterangan libur">'+
+      '<button class="x" type="button" title="Hapus" aria-label="Hapus tanggal">×</button>';
+    div.querySelector('button').onclick = () => { div.remove(); S.kalDiubah = true; };
+    $('kLibur').appendChild(div);
+  }
+  $('kLibur').addEventListener('input', () => { S.kalDiubah = true; });
+  $('kHariKerja').addEventListener('change', () => { S.kalDiubah = true; });
+  async function simpanKalender(){
+    const libur = [...document.querySelectorAll('#kLibur .libur-row')].map(r => ({ t: r.querySelector('.lTgl').value, ket: r.querySelector('.lKet').value.trim() })).filter(x => x.t);
+    loader(true, 'Menyimpan…');
+    try{
+      await api('adminSimpanKalender', S.token, { hariKerja: $('kHariKerja').value, libur: libur });
+      S.kalDiubah = false; toast('✅ Hari kerja & tanggal merah tersimpan'); await muatAdmin();
+    }catch(e){ toast(pesanErr(e), true); }
+    finally{ loader(false); }
   }
 
   async function periksaFotoLama(){
@@ -1776,6 +2300,8 @@
           loader(true, 'Memeriksa foto lama… '+selesai+' selesai, sisa '+Math.max(0, r.sisa - (i + bag.length)));
         }
       }
+      loader(true, 'Mencocokkan foto ganda…');
+      try{ await api('adminProsesSekarang', S.token); }catch(e){}
       loader(false);
       alert('Selesai. '+selesai+' foto lama sudah diperiksa.\nLaporan dengan foto ganda ditandai ⚠️ di tab Rekap dan Data Laporan.');
       await muatAdmin();
@@ -2005,8 +2531,161 @@
   });
   function tutupLayarPenuh(){ tutup('layarPenuh'); $('layarPenuhImg').removeAttribute('src'); }
 
+  // ---------- PROMOSI: 2 menit tidak disentuh & 5 detik saat Log-out ----------
+  const PROMO_DIAM_MS = 2 * 60 * 1000, PROMO_LOGOUT_DETIK = 5, PROMO_GAMBAR_MS = 8000;
+  const P = { info: null, url: {}, aktif: false, terakhir: Date.now(), mode: '', idx: 0, selesai: null, timer: 0, hitung: 0 };
+  function promoSiap(){ return !!(P.info && P.info.aktif && P.info.items.some(x => P.url[x.id])); }
+
+  /** Ambil daftar promosi lalu simpan filenya di perangkat (sekali saja, dipakai berulang). */
+  async function muatPromo(){
+    try{ P.info = await api('getPromoInfo'); }catch(e){ return; }
+    if (!P.info.aktif) return;
+    let cache = null;
+    try{ if (/^https?:/.test(location.origin)) cache = await caches.open('promo-v1'); }catch(e){}
+    for (const it of P.info.items){
+      if (P.url[it.id]) continue;
+      try{
+        const kunci = cache ? new Request(location.origin + '/__promo/' + it.id) : null;
+        let res = cache ? await cache.match(kunci).catch(() => null) : null;
+        if (!res){
+          const r = await api('getPromoIsi', it.id);
+          const bin = atob(r.data), arr = new Uint8Array(bin.length);
+          for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+          const blob = new Blob([arr], { type: r.mime });
+          if (cache) try{ await cache.put(kunci, new Response(blob, { headers: { 'Content-Type': r.mime } })); }catch(e){}
+          P.url[it.id] = URL.createObjectURL(blob);
+        } else P.url[it.id] = URL.createObjectURL(await res.blob());
+      }catch(e){}
+    }
+    // bersihkan file promosi lama yang sudah dihapus admin
+    if (cache) try{
+      const ada = new Set(P.info.items.map(x => location.origin + '/__promo/' + x.id));
+      (await cache.keys()).forEach(k => { if (!ada.has(k.url)) cache.delete(k); });
+    }catch(e){}
+  }
+
+  function tampilPromo(mode){
+    if (!promoSiap() || P.aktif) return Promise.resolve();
+    P.aktif = true; P.mode = mode; P.idx = 0;
+    const el = $('promo');
+    el.classList.remove('hidden'); requestAnimationFrame(() => el.classList.add('tampil'));
+    $('prTutup').classList.toggle('hidden', mode === 'logout');
+    $('prPetunjuk').textContent = mode === 'logout' ? 'Terima kasih, sampai jumpa! 👋' : 'Ketuk layar untuk kembali ke aplikasi';
+    $('prHitung').classList.toggle('hidden', mode !== 'logout');
+    putarPromo();
+    return new Promise(res => {
+      P.selesai = res;
+      if (mode === 'logout'){
+        P.hitung = PROMO_LOGOUT_DETIK; $('prHitung').textContent = P.hitung;
+        P.timer = setInterval(() => { P.hitung--; $('prHitung').textContent = Math.max(0, P.hitung); if (P.hitung <= 0) tutupPromo(); }, 1000);
+      }
+    });
+  }
+  function putarPromo(){
+    clearTimeout(P.ganti);
+    const daftar = P.info.items.filter(x => P.url[x.id]); if (!daftar.length) return tutupPromo();
+    const it = daftar[P.idx % daftar.length], box = $('prMedia');
+    $('prSuara').classList.add('hidden');
+    if (it.jenis === 'video'){
+      box.innerHTML = '<video id="prVideo" playsinline preload="auto"></video>';
+      const v = $('prVideo'); v.src = P.url[it.id]; v.muted = false; v.volume = 1;
+      v.onended = () => { P.idx++; putarPromo(); };
+      v.play().catch(() => {           // browser menolak suara otomatis → putar tanpa suara + tombol
+        v.muted = true; v.play().catch(() => {});
+        $('prSuara').classList.remove('hidden');
+      });
+    } else {
+      box.innerHTML = '<img src="'+P.url[it.id]+'" alt="Promosi">';
+      if (daftar.length > 1) P.ganti = setTimeout(() => { P.idx++; putarPromo(); }, PROMO_GAMBAR_MS);
+    }
+  }
+  function tutupPromo(){
+    if (!P.aktif) return;
+    clearInterval(P.timer); clearTimeout(P.ganti);
+    const v = $('prVideo'); if (v){ try{ v.pause(); }catch(e){} }
+    const el = $('promo'); el.classList.remove('tampil');
+    setTimeout(() => { el.classList.add('hidden'); $('prMedia').innerHTML = ''; }, 300);
+    P.aktif = false; P.terakhir = Date.now();
+    const res = P.selesai; P.selesai = null; if (res) res();
+  }
+  $('prSuara').addEventListener('click', e => { e.stopPropagation(); const v = $('prVideo'); if (v){ v.muted = false; v.play().catch(() => {}); } $('prSuara').classList.add('hidden'); });
+  $('prTutup').addEventListener('click', e => { e.stopPropagation(); tutupPromo(); });
+  // ketuk layar promosi (mode diam) → kembali ke aplikasi; saat Log-out tetap tampil 5 detik
+  $('promo').addEventListener('click', () => { if (P.mode !== 'logout') tutupPromo(); });
+
+  // deteksi 2 menit tidak disentuh
+  ['pointerdown','keydown','touchstart','wheel','input'].forEach(ev => document.addEventListener(ev, () => { if (!P.aktif) P.terakhir = Date.now(); }, { passive: true, capture: true }));
+  let gerakTerakhir = 0;
+  document.addEventListener('mousemove', () => { const t = Date.now(); if (!P.aktif && t - gerakTerakhir > 1000){ gerakTerakhir = t; P.terakhir = t; } }, { passive: true });
+  setInterval(() => {
+    if (P.aktif || document.hidden || !promoSiap()) return;
+    if (!$('loader').classList.contains('hidden') || !$('modalKamera').classList.contains('hidden')) { P.terakhir = Date.now(); return; }
+    if (Date.now() - P.terakhir >= PROMO_DIAM_MS) tampilPromo('diam');
+  }, 5000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) P.terakhir = Date.now(); });
+
+  // ---------- admin: kelola promosi ----------
+  function renderPromoAdmin(info){
+    if (!info) return;
+    $('prAktif').checked = !!info.aktif;
+    $('prDaftar').innerHTML = info.items.length ? info.items.map((it, i) =>
+      '<div class="promo-item"><div class="ikon">'+(it.jenis === 'video' ? '🎬' : (P.url[it.id] ? '<img src="'+P.url[it.id]+'" alt="">' : '🖼️'))+'</div>'+
+      '<div class="info"><b>'+(i+1)+'. '+esc(it.nama)+'</b>'+(it.jenis === 'video' ? 'Video' : 'Gambar')+' · '+(it.ukuran >= 1048576 ? (it.ukuran/1048576).toFixed(1)+' MB' : Math.max(1, Math.round(it.ukuran/1024))+' KB')+' · '+esc(it.tgl)+'</div>'+
+      (i > 0 ? '<button class="btn putih kecil" type="button" title="Naikkan urutan" onclick="naikPromo(\''+it.id+'\')">▲</button>' : '')+
+      '<button class="btn merah kecil" type="button" onclick="hapusPromo(\''+it.id+'\')">Hapus</button></div>').join('')
+      : '<div class="kosong" style="padding:10px">Belum ada promosi.</div>';
+  }
+  async function aturPromo(atur){
+    loader(true, 'Menyimpan…');
+    try{ const r = await api('adminAturPromo', S.token, atur); S.adm.promo = r; renderPromoAdmin(r); P.url = P.url; await muatPromo(); }
+    catch(e){ toast(pesanErr(e), true); }
+    finally{ loader(false); }
+  }
+  $('prAktif').addEventListener('change', () => aturPromo({ aktif: $('prAktif').checked }));
+  function naikPromo(id){
+    const ids = S.adm.promo.items.map(x => x.id), i = ids.indexOf(id);
+    if (i > 0){ [ids[i-1], ids[i]] = [ids[i], ids[i-1]]; aturPromo({ urutan: ids }); }
+  }
+  async function hapusPromo(id){
+    if (!confirm('Hapus promosi ini?')) return;
+    loader(true, 'Menghapus…');
+    try{ const r = await api('adminHapusPromo', S.token, id); S.adm.promo = r; delete P.url[id]; renderPromoAdmin(r); await muatPromo(); }
+    catch(e){ toast(pesanErr(e), true); }
+    finally{ loader(false); }
+  }
+  $('prFile').addEventListener('change', async e => {
+    const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+    const video = /^video\//.test(f.type);
+    if (!video && !/^image\//.test(f.type)) return toast('Pilih file gambar atau video', true);
+    if (video && f.size > 20*1048576) return toast('Video terlalu besar (maks. 20 MB). Kompres dulu, mis. 720p.', true);
+    loader(true, video ? 'Mengunggah video… (bisa 1–2 menit)' : 'Menyiapkan gambar…');
+    try{
+      let dataUrl;
+      if (video){
+        dataUrl = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(f); });
+      } else {
+        // gambar diperkecil (maks 1920px) supaya cepat dimuat di HP
+        const img = await muatGambar(f), s = Math.min(1, 1920 / Math.max(img.naturalWidth, img.naturalHeight));
+        const c = document.createElement('canvas'); c.width = Math.round(img.naturalWidth*s); c.height = Math.round(img.naturalHeight*s);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        dataUrl = c.toDataURL('image/jpeg', 0.85);
+        loader(true, 'Mengunggah gambar…');
+      }
+      const r = await api('adminUnggahPromo', S.token, f.name, dataUrl);
+      S.adm.promo = r; await muatPromo(); renderPromoAdmin(r);
+      toast('✅ Promosi ditambahkan');
+    }catch(err){ toast(pesanErr(err), true); }
+    finally{ loader(false); }
+  });
+  async function cobaPromo(){
+    if (!promoSiap()){ loader(true, 'Memuat promosi…'); await muatPromo(); loader(false); }
+    if (!promoSiap()) return toast('Belum ada promosi aktif. Unggah gambar/video dan centang "Tampilkan promosi".', true);
+    tampilPromo('diam');
+  }
+
   // ---------- mulai ----------
   aturTombolInstall();
+  setTimeout(muatPromo, 8000); setInterval(muatPromo, 30 * 60 * 1000);   // promosi baru dari admin ikut terbarui
   (function(){
     const t = ambilToken();
     if (t){ $('inToken').value = t; masuk(t, tokenDiingat()); }
